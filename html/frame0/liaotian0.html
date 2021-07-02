@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../css/liaotian/mui.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/liaotian/app.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/liaotian/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/liaotian/reset.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/news.css">
+    <link rel="stylesheet" type="text/css" href="../../css/liaotian.css">
+    <style>
+        .loadmore {
+            height: 30px;
+            line-height: 30px;
+            font-size: 14px;
+            text-align: center;
+            background-image: url('../../image/loading.gif');
+            background-size: 20px 20px;
+            background-position: center center;
+            background-repeat: no-repeat;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .audio {
+            background-image: url('../../res/img/yy.png');
+            background-repeat: no-repeat;
+            background-size: 25px 25px;
+            width: 25px;
+            height: 25px;
+            transform: rotate(180deg);
+            -webkit-transform: rotate(180deg);
+        }
+
+        .audio.aplaying {
+            background-image: url('../../res/img/yy.gif');
+        }
+
+        .msg-item-self .audio {
+            transform: rotate(0deg);
+            -webkit-transform: rotate(0deg);
+        }
+
+        /*   
+        * 利用滚动条特性 底部追加并不会自动滚动到底部，顶部追加则会滚动到顶部 
+        * 与消息列表恰好相反，故将消息列表容器旋转180以使用滚动条特性
+        * 视觉顺序与dom结构相反
+        */
+        #msg-list {
+            transform: rotate(180deg);
+            overflow-anchor: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #msg-list.end {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        #msg-list::-webkit-scrollbar {
+            display: none;
+        }
+
+        #msg-list .msg-wrap {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="view" v-cloak>
+        <!-- 录音提示 -->
+        <div id="sound-alert" class="rprogress" v-if="record==1">
+            <div class="rschedule"></div>
+            <div class="r-sigh">!</div>
+            <div id="audio_tips" class="rsalert">{{recordTxt}}</div>
+        </div>
+        <div class="mui-content">
+            <div class="loadmore" v-if="loadmore==1"></div>
+            <div id="msg-list">
+                <div id="msg-bottom"></div>
+                <div class="msg-wrap" v-for="(item, index) in ffList" :id="'id'+item.id">
+                    <div class="time" v-if="item.showtime"><span>{{item.time}}</span></div>
+                    <div class="recall" v-if="item['status'] == 3"><span>该消息已被撤回</span></div>
+                    <div v-else>
+                        <div class="hongbao-msg"
+                            v-if="item['type'] == -1 && item['state'] == 1 && item.data && item.data.chat_id">
+                            <p v-if="item.data.userid == userid">{{otherInfo.name}}领取了你的<span
+                                    @click="openRedDetail(item.data.chat_id, item.data.type)">红包</span></p>
+                            <p v-else>你领取了{{otherInfo.name}}的<span
+                                    @click="openRedDetail(item.data.chat_id, item.data.type)">红包</span>
+                            </p>
+                        </div>
+                        <li v-else
+                            :class="{'msg-item-self':item.self==1, 'red-envelope':item.type==5||item.type==7, 'money':item.type==7, 'read-burn':Number(item.is_burn)!=0, 'msg-area':item.type==6}"
+                            class="msg-item">
+                            <div class="msg-user">
+                                <img @click="goUserInfo(item.userid, item.name);" :id="item.userid"
+                                    :src="returnImg(item.head_portrait)"
+                                    onerror="this.src='../../image/touxiang.png'" />
+                            </div>
+                            <div class="msg-content" @touchstart="touchstartF(index);" @touchend="touchendF(index);">
+                                <div class="msg-content-inner" style="word-break: break-word;">
+                                    <div v-if="item.type==0" v-html="getMesge(item.content)"></div>
+                                    <div v-else-if="item.type==1">
+                                        <img v-if="Number(item.is_burn)==0" @click.stop
+                                            @click="_url({imgArr:[item.content], iIndex:0}, 'frame1/dy_img_win')"
+                                            class="msg-content-image load" :src="returnImg(item.content)"
+                                            onerror="this.src='../../image/error-img.png'" style="max-width: 100px;" />
+                                        <div v-else @click="openBurn(index)" class="burn-msg"
+                                            :class="{'burn':item.is_burn==-1}"></div>
+                                    </div>
+                                    <div v-else-if="item.type==2" @click.stop @click="audioPlay(index)">
+                                        <span class="play-state" style="margin-top:3px;">
+                                            <span class="audio"
+                                                :class="{'aplaying':audio.id==item.id && audio.play==1}"></span>
+                                        </span>
+                                    </div>
+                                    <div v-else-if="item.type==3" class="msg-video" @click="openVideo(index)">
+                                        <img :src="returnImg(item.data.cover)"
+                                            onerror="this.src='../../image/error-img.png'" alt="">
+                                        <!-- <img src="../../image/shop/01.jpg" alt=""> -->
+                                        <i class="video-icon"></i>
+                                    </div>
+                                    <div class="red-wrap" @click.stop @click="openRed(index)"
+                                        v-else-if="item.type==5||item.type==7">
+                                        <div class="red-img" :class="{'red-img-no':item.state==1}"></div>
+                                        <div class="game">
+                                            <p class="red-game-text">{{item.content}}</p>
+                                            <p class="red-game" v-if="item.state==0">等待领取</p>
+                                            <p class="red-game" v-else-if="item.state==1">已领取</p>
+                                            <p class="red-game" v-else-if="item.state==2">已过期</p>
+                                        </div>
+                                    </div>
+                                    <div class="msg-video" v-else-if="item.type==6" @click="openArea(index)">
+                                        <img src="../../image/icon/nim_location_bk.png" alt="">
+                                    </div>
+                                    <img v-if="item.type==8" class="msg-content-image load" :src="returnImg(item.cover)"
+                                        style="max-width: 50px;" />
+                                </div>
+                                <div class="msg-content-arrow"></div>
+                            </div>
+                            <div class="timeSec">
+                                <div v-if="item.self == 1"
+                                    style="line-height:50px;float:right;font-size:14px;color:#999;">
+                                    <span v-if="item.type==2">{{item.second}}s"</span>
+                                    <span class="read-status ready-read" v-if="item.isRead==1">已读</span>
+                                    <span class="read-status" v-else>未读</span>
+                                </div>
+                                <div v-else style="line-height:50px;font-size:14px;color:#999;">
+                                    <span v-if="item.type==2">{{item.second}}s"</span>
+                                </div>
+                            </div>
+                            <div class="mui-item-clear"></div>
+                        </li>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script src="../../script/api.js"></script>
+<script src="../../script/jquery.js"></script>
+<script src="../../script/emotion.js"></script>
+<script src="../../script/ffkj.js"></script>
+<script src="../../script/liaotian.js"></script>
+<script src="../../script/socket.js"></script>
+<script src="../../script/map.js"></script>
+<script src="../../script/audio.js"></script>
+<script src="../../script/uibutton.js"></script>
+<script src="../../script/vue.js"></script>
+<script type="text/javascript" charset="utf-8">
+    heigutgao = 1; // 默认允许加载
+    pagenum = 0;
+    var view = new Vue({
+        el: '#view',
+        data: {
+            imgurl: imgurl,
+            ffList: [],
+            ffInfo: {},
+            ios: 1, // 1上架 0非上架
+            userid: 0,
+            userInfo: {}, // 我的
+            touserid: 0,
+            otherInfo: {}, // 对方的
+            loadmore: 0, // 1加载中 0隐藏
+            panelHeight: 0, // 面板高度
+            inputBarHeight: 0, // 输入框高度
+            panStatus: 0, // 面板是否有开启
+            panNum: { // 统计次数
+                input: 0, // 面板高度变化的次数
+                ext: 0, // 控件面板是第几次打开
+                emo: 0, // 表情面板是第几次打开
+            },
+            nowH: 0, // 当前列表的高度
+            isKeFu: 0, // 是否为客服
+            audio: {
+                id: 0, // 消息id
+                play: 0 // 状态 1播放 0未播放
+            },
+            record: 0, // 1 录音中 0未录音
+            recordTxt: '手指上划，取消发送', // 录音提示文本
+            topTime: 0,
+        },
+        methods: {
+            touchstartF: function (index) {
+                // var e = event.currentTarget;
+                touchstartF(index);
+            },
+            touchendF: function (index) {
+                // var e = event.currentTarget;
+                touchendF(index);
+            },
+            getMesge: function (s) {
+                return getMesge(s);
+            },
+            _url: function (param, url) {
+                _url(param, url);
+            },
+            // 打开音频
+            audioPlay: function (index) {
+                var _this = this;
+                var data = _this.ffList[index];
+                if (_this.audio.id == data.id) {
+                    _this.audio.play = _this.audio.play == 0 ? 1 : 0;
+                } else {
+                    _this.audio.id = data.id;
+                    _this.audio.play = 1;
+                }
+                if (_this.audio.play == 1) {
+                    audio.play({
+                        url: returnImg(data.content)
+                    })
+                    setTimeout(function () {
+                        _this.audio.play = 0;
+                        audio.stop();
+                    }, data.second * 1000)
+                } else {
+                    audio.stop();
+                }
+            },
+            // 打开红包详情
+            openRed: function (index) {
+                openRed(index)
+            },
+            // 打开红包详情
+            openRedDetail: function (id, type) {
+                if (type == 5) {
+                    // 平台币
+                    _url({
+                        id: id
+                    }, 'frame0/hong_bao_detail');
+                } else {
+                    // 现金
+                    _url({
+                        id: id
+                    }, 'frame0/money_detail');
+                }
+            },
+            // 跳转 查看用户详情
+            goUserInfo: function (id, name) {
+                go_userInfo(id, name)
+            },
+            // 打开阅后即焚的详情
+            openBurn: function (index) {
+                openBurn(index);
+            },
+            // 打开视频
+            openVideo: function (index) {
+                openVideo(index)
+            },
+            // 打开地址
+            openArea: function (index) {
+                openArea(index)
+            },
+            // 图片
+            returnImg: function (url) {
+                return returnImg(url);
+            },
+        }
+    })
+    var recMp3, map, audio;
+    apiready = function () {
+        view.topTime = new Date().getTime();
+        view.ios = $api.getStorage('shang');
+        view.userid = $api.getStorage('userid');
+        view.touserid = api.pageParam['touserid'];
+        view.panelHeight = api.safeArea.bottom;
+        // 获取他人资料
+        _getUser(function (ret) {
+            view.otherInfo = ret.result;
+        }, view.touserid)
+        // 获取自己的
+        _getUser(function (ret) {
+            view.userInfo = ret.result;
+            editor();
+        })
+        // 加载消息列表
+        getMsgList(0);
+
+        _listener('viewappear', function () {
+            _getUser(function (ret) {
+                view.userInfo = ret.result;
+            })
+        })
+
+        openWS()
+
+        // 监听领取情况
+        _listener('updateHB', function (ret) {
+            var result = ret.value;
+            updateHongbao(result.id, result.state)
+        })
+
+        recMp3 = api.require('recMp3');
+        map = new Map();
+        audio = new Audio();
+    }
+    // 视觉顺序与dom结构相反
+    $('#msg-list').scroll(function () {
+        var $msg = $('#msg-list');
+        var liaoH = $msg[0].scrollHeight; // 实际高度
+        var viewH = $msg.height(); // 显示的高度
+        var toTop = $msg.scrollTop(); // 滚动条移动的距离
+        // 滚动到底部加载下一页
+        if (liaoH - viewH - toTop < 10) {
+            if (heigutgao == 1) {
+                pagenum++;
+                getMsgList(pagenum);
+            }
+        }
+    })
+
+    // 加载上一页
+    function getMsgList(page) {
+        view.loadmore = 1;
+        view.nowH = $('#msg-list').height();
+        console.log(view.nowH)
+        _ajax('home/Privatechat/getMsgList', function (ret, err) {
+            if (ret.code == 200) {
+                var data = ret.result.reverse();
+                view.ffList = view.ffList.concat(data);
+
+            } else if (ret.code == 201) {
+                heigutgao = 0;
+            }
+            view.loadmore = 0;
+            if (page == 0) {
+                goBottom();
+            }
+        }, {
+            userid: view.userid,
+            touserid: view.touserid,
+            page: page,
+        })
+    }
+</script>
+
+</html>

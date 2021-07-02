@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../css/api.css">
+    <link rel="stylesheet" href="../../css/news.css">
+    <link rel="stylesheet" href="../../css/login.css">
+    <style>
+        .login-bg {
+            background-color: #663dfb;
+        }
+
+        .wrap {
+            padding-top: 65vw;
+            position: fixed;
+            z-index: 1;
+            width: 100%;
+            box-sizing: border-box;
+            left: 0;
+            top: 0;
+        }
+
+        .new-btn {
+            background: #fff;
+            color: #663dfb;
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 45px;
+            width: calc(100% - 40px);
+            margin: 15px 20px;
+        }
+
+        .reg-btn {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .line-wrap .tip {
+            padding: 0 5px;
+        }
+
+        .line {
+            width: 15px;
+            height: 1px;
+            background: #fff;
+        }
+
+        .line-wrap .tip,
+        .xieyi,
+        .xieyi a {
+            color: #fff;
+        }
+
+        .login-img img {
+            padding: 5px;
+            background: #7b56ff;
+            border-radius: 50%;
+            width: 25px;
+            margin: 15px;
+        }
+
+        .check-box {
+            border: 1px solid #ddd;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+
+        .check-box.active {
+            background-image: url('../../image/select.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+
+        }
+
+        .xieyi p {
+            color: #fff;
+        }
+
+        .bg-img {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-bg" id="view">
+        <div class="wrap">
+            <button class="new-btn login-btn" tapmode onclick="judgeXY(2)">登录</button>
+            <button class="new-btn reg-btn" tapmode onclick="judgeXY(3)">注册</button>
+            <!-- <button class="new-btn" tapmode onclick="_url({url:'frame0/she_zhi_ji_ben_zi_liao_frame', title:'注册'})">注册</button> -->
+            <div class="other-login">
+                <div class="xieyi flex-c">
+                    <div @click.stop @click="xieyi= xieyi==1?0:1" class="check-box" :class="{'active':xieyi==1}"></div>
+                    <p> 我已阅读<a href="javascript:;" onclick="openPage(2)">《用户协议》</a>和<a href="javascript:;"
+                            onclick="openPage(3)">《用户隐私政策》</a> </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../../script/api.js"></script>
+<script src="../../script/jquery.js"></script>
+<script src="../../script/ffkj.js"></script>
+<script src="../../script/login.js"></script>
+<script src="../../script/push.js"></script>
+<script src="../../script/vue.js"></script>
+<script src="../../script/update.js"></script>
+<script>
+    var view = new Vue({
+        el: '#view',
+        data: {
+            xieyi: 0,
+            ios: 1, // 1上架 0非上架
+        }
+    })
+    apiready = function () {
+        view.ios = $api.getStorage('shang');
+        keyback()
+        var push = new Push();
+        push.setAlias(0); // 退出登录 解除与该账号的关联
+        _heibai(1);
+        $api.rmStorage('userid');
+        $api.rmStorage('sex');
+        api.setAppIconBadge({ //桌面红点
+            badge: 0,
+        });
+        _listener('viewappear', function () {
+            var push = new Push();
+            push.setAlias(0); // 退出登录 解除与该账号的关联
+            _heibai(1);
+            $api.rmStorage('userid');
+            $api.rmStorage('sex');
+            api.setAppIconBadge({ //桌面红点
+                badge: 0,
+            });
+        })
+
+        updateVision();
+
+
+    }
+
+    // 判断是否有勾选协议
+    function judgeXY(index) {
+        if (view.xieyi == 0) {
+            _msg('请先查看协议并勾选协议');
+            return;
+        }
+        if (index == 0) {
+            login(0)
+            return;
+        }
+        if (index == 1) {
+            login(1)
+            return;
+        }
+        if (index == 2) {
+            _url({
+                url: 'shang/login',
+                title: '登录'
+            });
+            return;
+        }
+        if (index == 3) {
+            _url({
+                url: 'shang/reg',
+                title: '注册'
+            });
+            return;
+        }
+    }
+</script>
+
+</html>

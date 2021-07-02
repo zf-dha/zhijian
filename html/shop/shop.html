@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../css/api.css">
+    <link rel="stylesheet" href="../../css/news.css">
+    <link rel="stylesheet" href="../../css/aui_font.css">
+    <link rel="stylesheet" href="../../css/base_icon.css">
+    <link rel="stylesheet" href="../../css/swiper.css">
+    <script src="../../script/swiper.js"></script>
+    <style>
+        /* 分类 */
+        .classfiy_ul {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 10px;
+        }
+
+        .classfiy_ul .li {
+            width: 20%;
+            /* height: 98px; */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-box-pack: center;
+            /* 12版 */
+            -webkit-justify-content: center;
+            -moz-justify-content: center;
+            -ms-justify-content: center;
+            -o-justify-content: center;
+            justify-content: center;
+            font-size: 12px;
+            line-height: 2;
+            color: #aaaaaa;
+        }
+
+        .classfiy_ul .li .img-wrap {
+            /* background: linear-gradient(24deg, #fff, #fca0cf, #663DFB, #663DFB); */
+            /* background: linear-gradient(24deg, #fff, #ba9fe8, #663DFB, #4208A7); */
+            /* border-radius: 50%; */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            /* box-shadow: 0px 0px 10px #663DFB; */
+        }
+
+        .classfiy_ul .li .img-wrap img {
+            width: 50px;
+            height: 50px;
+        }
+
+        /* 轮播 */
+        .swiper-container {
+            overflow: hidden;
+        }
+
+        .swiper-slide img {
+            width: 100%;
+            height: 50vw;
+        }
+
+        /* 分页器 */
+        .swiper-pagination-fraction,
+        .swiper-pagination-custom,
+        .swiper-container-horizontal>.swiper-pagination-bullets {
+            position: absolute;
+            right: 10px;
+            width: auto;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            justify-content: center;
+            bottom: 10px;
+            left: auto;
+        }
+
+        .swiper-pagination-bullet {
+            width: 4px;
+            height: 4px;
+        }
+
+        /* 广告图 */
+        .ad-img {
+            height: 25vw;
+            border-radius: 7px;
+            margin: 10px;
+            overflow: hidden;
+        }
+
+        .ad-img img {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 商品列表 */
+        .shop-ul {
+            margin: 0 5px;
+        }
+
+        .shop-ul .list {
+            width: calc((100% - 10px)/2);
+            margin-right: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .shop-ul .list img {
+            width: 100%;
+            height: 150px;
+        }
+
+        .shop-ul .list .tag {
+            font-size: 10px;
+            color: #fff;
+            background: #4caf50;
+            border-radius: 3px;
+            padding: 0 5px;
+            font-weight: normal;
+        }
+
+        .shop-ul .list:nth-child(2n) {
+            margin-right: 0;
+        }
+
+        .shop-ul .list .price {
+            color: orangered;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="view">
+        <header class="w-bg">
+            <ul class="classfiy_ul">
+                <li class="li" v-if="index < 5" v-for="(m, index) in themeList"
+                    @click="_url({title: m.name, id: m.id}, 'shop/fenlei_win')">
+                    <div class="img-wrap">
+                        <img class="img" :src="returnImg(m.image)" onerror="this.src='../../image/error-img.png'" />
+                    </div>
+                    <aside>{{ m.name }}</aside>
+                </li>
+            </ul>
+        </header>
+        <!--    <div class="ad-img">
+            <img src="../../image/test/02.png" alt="">
+        </div>-->
+        <div class="shop-wrap">
+            <!-- <h3 class="new-padding-10">推荐商品</h3> -->
+            <ul class="shop-ul flex-w">
+                <li class="list" v-for="(g, index) in ffList"
+                    @click="_url({url:'shop/shop_detail', title:'商品详情', id:g.id})">
+                    <div class="img">
+                        <img :src="returnImg(g.image)" onerror="this.src='../../image/error-img.png'" alt="">
+                    </div>
+                    <div class="aui-ellipsis-2">
+                        {{ g.name }}
+                    </div>
+                    <div class="price">￥{{ g.price }}</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script src="../../script/api.js"></script>
+<script src="../../script/jquery.js"></script>
+<script src="../../script/ffkj.js"></script>
+<script src="../../script/vue.js"></script>
+<script src="../../script/wximg.js"></script>
+<script>
+    var view = new Vue({
+        el: '#view',
+        data: {
+            myuserid: $api.getStorage('userid'),
+            imgurl: imgurl,
+            ffList: [],
+            ffInfo: {},
+            lbList: [], //轮播列表
+            themeList: [], // 主题列表
+            gList: [], // 商品列表
+        },
+        methods: {
+            _url: function (param, url) {
+                _url(param, url);
+            },
+            // 图片
+            returnImg: function (url) {
+                return returnImg(url);
+            },
+            // 图片自适应
+            imgCss: function (url, event) {
+                console.log(url)
+                var e = event.currentTarget;
+                imgCss(url, function (w, h) {
+                    if (w < h) {
+                        $(e).parent().addClass('img-w').removeClass('img-h');
+                    }
+                })
+            },
+            // 清除html
+            clearHtml: function (s) {
+                return clearHtml(s);
+            }
+        }
+    })
+    apiready = function () {
+
+        _shangla(function () {
+            getTheme();
+            // getLunbo();
+            _lists('api/mall.goods/goodsList', 1, 1);
+        })
+        _scrollToBottom(function () {
+            if (heigutgao == 1) {
+                pagenum++;
+                _lists('api/mall.goods/goodsList', pagenum);
+            }
+        })
+    }
+
+    // 获取商品分类
+    function getTheme() {
+        _ajax('api/mall.goods/category', function (ret, err) {
+            console.log(JSON.stringify(ret))
+            console.log(JSON.stringify(err))
+            if (ret && ret.ret) {
+                ret = ret.ret;
+                view.themeList = ret.data;
+            }
+        })
+    }
+
+    // 获取轮播图
+    function getLunbo() {
+        _ajax('home/user/lunbo', function (ret, err) {
+            console.log(JSON.stringify(ret))
+            console.log(JSON.stringify(err))
+            if (ret && ret.code == 200 && ret.result && ret.result.length > 0) {
+                view.lbList = ret.result;
+                setTimeout(function () {
+                    var swiper = new Swiper('.swiper-container', {
+                        loop: true,
+                        pagination: {
+                            el: '.swiper-pagination',
+                            clickable: true,
+                        },
+                        autoplay: {
+                            delay: 5000,
+                            stopOnLastSlide: false,
+                            disableOnInteraction: false,
+                        },
+                    });
+                }, 1000)
+            }
+        }, {
+            tid: 3
+        })
+    }
+</script>
+
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../css/api.css">
+    <link rel="stylesheet" href="../../css/news.css">
+    <link rel="stylesheet" href="../../css/aui_font.css">
+    <link rel="stylesheet" href="../../css/user.css">
+</head>
+
+<body>
+    <div class="wrap" id="view" v-cloak>
+        <p class="tab">隐身</p>
+        <ul class="ul w-bg">
+            <li class="li">
+                <div class="title" style="word-break: keep-all;width: auto;;">在首页列表隐藏我</div>
+                <div class="content" style="width: 100%;text-align: right;">
+                    <i class="base-icon my-msg" :class="{'my-msg-close':ffInfo.hide_search==0}" onclick="changeSocial('hide_search')"></i>
+                </div>
+            </li>
+        </ul>
+        <p class="tab">隐藏距离和在线时间</p>
+        <ul class="ul w-bg">
+            <li class="li">
+                <div class="title" style="word-break: keep-all;width: auto;;">对他人隐藏我的距离</div>
+                <div class="content" style="width: 100%;text-align: right;">
+                    <i class="base-icon my-msg" :class="{'my-msg-close':ffInfo.hide_distance==0}"
+                        onclick="changeSocial('hide_distance')"></i>
+                </div>
+            </li>
+            <li class="li">
+                <div class="title" style="word-break: keep-all;width: auto;;">对他人隐藏我的在线时间</div>
+                <div class="content" style="width: 100%;text-align: right;">
+                    <i class="base-icon my-msg" :class="{'my-msg-close':ffInfo.hide_online_time ==0}"
+                        onclick="changeSocial('hide_online_time')"></i>
+                </div>
+            </li>
+        </ul>
+    </div>
+</body>
+<script src="../../script/api.js"></script>
+<script src="../../script/jquery.js"></script>
+<script src="../../script/ffkj.js"></script>
+<script src="../../script/vue.js"></script>
+<script src="../../script/wximg.js"></script>
+<script>
+    var view = new Vue({
+        el: '#view',
+        data: {
+            imgurl: imgurl,
+            ffList: [],
+            ffInfo: {},
+        },
+        methods: {
+            _url: function (param, url) {
+                _url(param, url);
+            },
+            // 图片
+            returnImg: function (url) {
+                return returnImg(url);
+            },
+            // 图片自适应
+            imgCss: function (url, event) {
+                var e = event.currentTarget;
+                imgCss(url, function (w, h) {
+                    if (w < h) {
+                        $(e).parent().addClass('img-w').removeClass('img-h');
+                    }
+                })
+            },
+        }
+    })
+    apiready = function () {
+        _getUser(function (ret) {
+            view.ffInfo = ret.result;
+        })
+    }
+
+    // 修改隐身信息是否显示
+    function changeSocial(ziduan) {
+        view.ffInfo[ziduan] = view.ffInfo[ziduan] == 1 ? 0 : 1;
+        var obj = {
+            user_id: $api.getStorage('userid'),
+        }
+        obj[ziduan] = view.ffInfo[ziduan];
+        _ajax('api/user/editInfo', function (ret, err) {
+            console.log(JSON.stringify(ret))
+            console.log(JSON.stringify(err))
+        }, obj)
+    }
+</script>
+
+</html>

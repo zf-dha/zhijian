@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Document</title>
+	<link rel="stylesheet" href="../../css/api.css">
+	<link rel="stylesheet" href="../../css/aui_font.css">
+	<link rel="stylesheet" href="../../css/news.css">
+	<link rel="stylesheet" href="../../css/tousu.css">
+	<style>
+		html,
+		body {
+			background: #fff;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="view">
+		<ul class="wrap dy-wrap">
+			<!-- <p class="tip">选择要反馈的类型</p>
+			<li class="list" :class="{'select':m.id == selectId}" v-for="(m, index) in ffList" @click="select(m.id)">
+				<div class="title">{{m.name}}</div>
+				<div class="yuan"></div>
+			</li> -->
+			<!-- <li class="list ">
+                <div class="title">沟通态度恶劣</div>
+                <div class="yuan"></div>
+            </li> -->
+			<li class="list tu flex-col">
+				<!-- <div class="title">补充描述</div> -->
+				<div class="content">
+					<textarea name="" placeholder="感谢你对我们的关注和支持，你的宝贵一键将帮助我们不断进步，谢谢~" id="content"></textarea>
+				</div>
+			</li>
+		</ul>
+		<button class="new-submit" onclick="submit()">提交</button>
+	</div>
+</body>
+<script src="../../script/api.js"></script>
+<script src="../../script/jquery.js"></script>
+<script src="../../script/ffkj.js"></script>
+<script src="../../script/vue.js"></script>
+<script src="../../script/wximg.js"></script>
+<script>
+	var view = new Vue({
+		el: '#view',
+		data: {
+			ffList: [{
+				id: 1,
+				name: '应用卡顿'
+			}, {
+				id: 2,
+				name: 'BUG反馈'
+			}, {
+				id: 3,
+				name: '客服回复慢'
+			}, {
+				id: 4,
+				name: '其他建议'
+			}],
+			selectId: 1
+		},
+		methods: {
+			select: function (id) {
+				var _this = this;
+				_this.selectId = id;
+			}
+		}
+	})
+
+	// 确定
+	function submit() {
+		var content = $('#content').val();
+		if (!content) {
+			_msg('请输入反馈内容');
+			return;
+		}
+		// var types = view.ffList[view.selectId - 1].name;
+		// content = types + ',' + content;
+
+		_loading();
+		_ajax('api/user/feedback', function (ret, err) {
+			console.log(JSON.stringify(ret))
+			console.log(JSON.stringify(err))
+			var msg = ret.code == 200 ? '提交成功' : ret.msg;
+			_loadingClose();
+			_msg(msg);
+			if (ret && ret.code == 200) {
+				timerWin();
+			}
+		}, {
+			user_id: $api.getStorage('userid'),
+			content: content
+		})
+	}
+</script>
+
+</html>

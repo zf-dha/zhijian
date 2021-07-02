@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../css/api.css">
+    <link rel="stylesheet" href="../../css/aui_font.css">
+    <link rel="stylesheet" href="../../css/base_icon.css">
+    <link rel="stylesheet" href="../../css/news.css">
+    <link rel="stylesheet" href="../../css/frame0.css">
+    <style>
+        .more.active {
+            color: #663DFB;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="view" v-cloak>
+        <ul class="wrap">
+            <li class="list" v-for="(x, index) in ffList" @click="goUserInfo(x)" v-if="x.user_id != myuserid">
+                <div class="content-wrap">
+                    <div class="tx img-h">
+                        <img :src="returnImg(x.user_head)" onerror="this.src='../../image/touxiang.png'" alt="">
+                        <span class="img-tag flex">
+                            <i class="base-icon index-image-icon" style="font-size: 12px;margin-right: 3px;"></i>
+                            <span class="img-num">{{x.imgcount || 0}}</span>
+                        </span>
+                    </div>
+                    <div class="content">
+                        <div class="flex-bt">
+                            <div class="name-wrap flex">
+                                <span class="name">{{ x.user_name}}</span>
+                                <span class="girl-tag tag" v-if="x.nvshen==1"></span>
+                                <span class="real-tag tag" v-if="x.is_identity_authentication == 2"></span>
+                                <span class="vip-tag tag" v-if="x.is_vip >0 "></span>
+                            </div>
+                            <span class="more" @click.stop @click="_more(index);">
+                                <i class="aui-iconfont aui-icon-more"></i>
+                            </span>
+                        </div>
+                        <div class="tag-wrap">
+                            <!-- <div class="flex">
+                                <span class="tag">{{ x.city || '未知' }}</span>
+                                <span class="tag" v-if="x.user_age">{{x.user_age}}岁 · {{x.constellation}}</span>
+                                <span class="tag">{{ x.occupation || '未设置' }}</span>
+                            </div>
+                            <div class="flex">
+                                <span class="tag area-tag"><i class="base-icon index-juli-icon"></i><span>{{ x.user_distance ? x.user_distance : 未知 }}</span></span>
+                                <span class="tag online-tag" :class="{'no-online-tag':x.last_login_datetime!= '在线'}">{{x.last_login_datetime}}</span>
+                                <span class="tag money-tag" v-if="x.img_auth == 1"><i class="base-icon index-hb-icon"></i><span>付费相册</span></span>
+                                <span class="tag lock-tag" v-if="x.img_auth == 2"><i class="base-icon index-lock-icon"></i><span>申请浏览</span></span>
+                            </div> -->
+                            <div class="flex">
+                                <span class="tag">{{ x.city || '未知' }}</span>
+                                <span class="tag" v-if="x.user_age">{{x.user_age}}岁 · {{x.constellation}}</span>
+                                <span class="tag">{{ x.occupation || '未设置' }}</span>
+                            </div>
+                            <div class="flex">
+                                <span class="tag area-tag"><i
+                                        class="base-icon index-juli-icon"></i><span>{{ x.user_distance ? x.user_distance : 未知 }}</span></span>
+                                <span class="tag online-tag no-online-tag"
+                                    v-if="x.is_online==0 || x.last_login_datetime== '保密'">{{x.last_login_datetime}}</span>
+                                <span class="tag online-tag" v-else>在线</span>
+                                <span class="tag money-tag" v-if="x.img_auth == 1"><i
+                                        class="base-icon index-hb-icon"></i><span>付费相册</span></span>
+                                <span class="tag lock-tag" v-if="x.img_auth == 2"><i
+                                        class="base-icon index-lock-icon"></i><span>申请浏览</span></span>
+                            </div>
+                            <div class="flex" v-if="!ios">
+                                <span v-if="x && x.tags">
+                                    <span class="tag" v-for="t in x.tags.split(',')">{{t}}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <span class="more" :class="{'active': x.love == 1}" @click.stop @click="sc(x.user_id, index);">
+                                    <i class="aui-iconfont aui-icon-star"></i>
+                                </span> -->
+
+            </li>
+        </ul>
+    </div>
+</body>
+<script src="../../script/api.js"></script>
+<script src="../../script/jquery.js"></script>
+<script src="../../script/ffkj.js"></script>
+<script src="../../script/vue.js"></script>
+<script src="../../script/wximg.js"></script>
+<script src="../../script/frame0.js"></script>
+<script>
+    var view = new Vue({
+        el: '#view',
+        data: {
+            imgurl: imgurl,
+            ffList: [],
+            ios: 1, // 1上架 0非上架
+            myuserid: '',
+        },
+        methods: {
+            // 跳转 查看用户详情
+            goUserInfo: function (data) {
+                go_userInfo(data.user_id, data.user_name, data.user_sex)
+            },
+            // 收藏
+            sc: function (uid, index) {
+                _sc(uid, index)
+            },
+            // 更多
+            _more: function (index) {
+                _scAndBlack(index)
+            },
+            _url: function (param, url) {
+                _url(param, url);
+            },
+            // 图片
+            returnImg: function (url) {
+                return returnImg(url);
+            },
+            // 图片自适应
+            imgCss: function (url, event) {
+                var e = event.currentTarget;
+                imgCss(url, function (w, h) {
+                    if (w < h) {
+                        $(e).parent().addClass('img-w').removeClass('img-h');
+                    }
+                })
+            },
+        }
+    })
+
+    apiready = function () {
+        view.ios = $api.getStorage('shang');
+        view.myuserid = $api.getStorage('userid');
+        var key = api.pageParam['key'];
+        var param = {
+            user_id: $api.getStorage('userid'),
+            name: key,
+            longitude: $api.getStorage('lon'),
+            latitude: $api.getStorage('lat')
+        };
+        _shangla(function () {
+            _lists('api/user/index', 0, 1, param);
+        })
+
+        _scrollToBottom(function () {
+            if (heigutgao == 1) {
+                pagenum++;
+                _lists('api/user/index', pagenum, '', param);
+            }
+        })
+
+    }
+</script>
+
+</html>

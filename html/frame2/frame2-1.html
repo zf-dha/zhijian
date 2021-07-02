@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../css/api.css">
+    <link rel="stylesheet" href="../../css/news.css">
+    <link rel="stylesheet" href="../../css/frame2.css">
+    <style>
+        .del {
+            position: absolute;
+            right: 0;
+            color: #fff;
+            width: 80px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap" id="view" v-cloak>
+        <ul class="u-wrap">
+            <!-- 系统通知 -->
+            <!-- <li class="list" @click="_url({url:'frame2/xi_tong_xi', title: '系统通知'})" v-for="(m, index) in sysInfo"
+                v-if="sysInfo.length>0">
+                <div class="tx img-h">
+                    <img src="../../image/icon/ic_repair.png" alt="">
+                </div>
+                <div class="content">
+                    <div class="flex-bt">
+                        <div class="name-wrap" style="position: relative;">
+                            <span class="name">系统通知</span>
+                        </div>
+                        <span class="time">{{m.addtime}}</span>
+                    </div>
+                    <p class="msg aui-ellipsis-1">{{clearHtml(m.content)}}</p>
+                </div>
+            </li> -->
+            <!-- 私聊列表 -->
+            <!-- <li class="list-wrap" >
+                <div class="list">
+                    <div class="tx img-h">
+                        <img src="../../image/touxiang.png" alt="">
+                    </div>
+                    <div class="content">
+                        <div class="flex-bt">
+                            <div class="name-wrap" style="position: relative;">
+                                <span class="name">张三</span>
+                               
+                            </div>
+                            <span class="time">2020-03-25</span>
+                        </div>
+                        <div class="flex-bt new-margin-t-10">
+                            <p class="msg aui-ellipsis-1">开通会员后才能看到对方给您的留言~开通会员后才能看到对方给您的留言~</p>
+                            <span class="yuan">99+</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="del new-hide" @click="delMsg($event, m.id, m.userid)">
+                    删除
+                </div>
+            </li> -->
+            <li class="list-wrap" v-for="(m, index) in ffList" :id="m.userid">
+                <div class="list" @click="goTalk(m.userid, m.name)" @touchstart="touchstartF($event);"
+                    @touchmove="touchmoveF($event);">
+                    <div class="tx img-h">
+                        <img :src="returnImg(m.sumb_headimg)"
+                            onerror="this.src='../../image/touxiang.png'" alt="">
+                    </div>
+                    <div class="content">
+                        <div class="flex-bt">
+                            <div class="name-wrap" style="position: relative;">
+                                <span class="name">{{m.name}}</span>
+                            </div>
+                            <span class="time">{{m.addtime}}</span>
+                        </div>
+                        <div class="flex-bt new-margin-t-10">
+                            <p class="msg aui-ellipsis-1" style="max-width: 80%;;">{{clearHtml(m.content)}}</p>
+                            <!-- <p class="msg aui-ellipsis-1" v-if="isVip == 1">开通会员后才能看到对方给您的留言~</p> -->
+                            <span class="yuan" v-if="m.count > 0">{{m.count>99? '99+' : m.count}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="del new-hide" @click="delMsg($event, m.userid)">
+                    删除
+                </div>
+            </li>
+        </ul>
+        <div id="no_more" :class="{'null': ffList.length == 0}"></div>
+    </div>
+</body>
+<script src="../../script/api.js"></script>
+<script src="../../script/jquery.js"></script>
+<script src="../../script/ffkj.js"></script>
+<script src="../../script/vue.js"></script>
+<script src="../../script/wximg.js"></script>
+<script src="../../script/del_liaotian.js"></script>
+<script src="../../script/socket.js"></script>
+<script src="../../script/limitchat.js"></script>
+<script>
+    var view = new Vue({
+        el: '#view',
+        data: {
+            imgurl: imgurl,
+            ffList: [],
+            ffInfo: {},
+            isVip: 0,
+            sysInfo: [], // 系统通知 所有人的
+            kefu: 0, // 客服id
+        },
+        methods: {
+            // 
+            touchstartF: function (event) {
+                touchstartF(event);
+            },
+            touchmoveF: function (event) {
+                var e = event.currentTarget;
+                touchmoveF(event, e);
+            },
+            // 删除
+            delMsg: function (event, id) {
+                var touid = id;
+                var e = event.currentTarget;
+                var index = $('#' + id).index();
+                $(e).siblings('.list').css({
+                    'WebkitTransform': 'translateX(0px)',
+                    'transition': '-webkit-transform 300ms ease-in-out'
+                })
+                $(e).addClass('new-hide');
+                console.log(index);
+                var _this = this;
+                _this.ffList.splice(index, 1);
+                _ajax('home/Privatechat/delChat', function (ret, err) {
+                    console.log(JSON.stringify(ret))
+                    console.log(JSON.stringify(err))
+                    pushMsg($api.getStorage('userid'));
+                }, {
+                    uid: $api.getStorage('userid'),
+                    touid: touid
+                })
+            },
+            // 打开聊天窗口
+            goTalk: function (uid, name) {
+                var _this = this;
+                if (view.kefu == $api.getStorage('userid')) {
+                    // 如果自己是客服
+                    _url({
+                        txt: name,
+                        touserid: uid,
+                        url: 'frame0/liaotian',
+                        title: '与' + name + '的聊天'
+                    })
+                } else {
+                    if (view.kefu == uid) {
+                        _url({
+                            txt: '客服',
+                            touserid: uid,
+                            url: 'frame0/liaotian',
+                            title: '与客服的聊天'
+                        })
+                    } else {
+                        checkChat(uid, function () {
+                            _url({
+                                txt: name,
+                                touserid: uid,
+                                url: 'frame0/liaotian',
+                                title: '与' + name + '的聊天'
+                            })
+                        })
+                    }
+                }
+            },
+            _url: function (param, url) {
+                _url(param, url);
+            },
+            // 图片
+            returnImg: function (url) {
+                return returnImg(url);
+            },
+            // 图片自适应
+            imgCss: function (url, event) {
+                var e = event.currentTarget;
+                imgCss(url, function (w, h) {
+                    if (w < h) {
+                        $(e).parent().addClass('img-w').removeClass('img-h');
+                    }
+                })
+            },
+            // 清除html
+            clearHtml: function (s) {
+                return clearHtml(s);
+            }
+        }
+    })
+    var sysTime = 1000;
+    var sysNowType = 0;
+    var feeObj = {};
+    apiready = function () {
+        _shangla(function () {
+            getFee()
+            openService()
+            setTimeout(function () {
+                getNowMsgList();
+            }, 500)
+        })
+        view.isVip = $api.getStorage('isVip');
+        _listener('viewappear', function () {
+            view.isVip = $api.getStorage('isVip');
+            getFee()
+            getNowMsgList();
+            openService()
+        })
+
+        openWS();
+        // socket关闭
+        _listener('socketclose', function (ret) {
+            if (ret.value.index == 2) {
+                openWS();
+            }
+        })
+    }
+
+    // 获取客服id
+    function openService() {
+        _ajax('api/Member/kefu', function (ret, err) {
+            if (ret && ret.data && ret.data.id) {
+                view.kefu = ret.data.id
+            }
+        })
+    }
+
+    function openWS() {
+        var _ws = new WS(2);
+        _ws.open(function () {
+            _ws.send(JSON.stringify({
+                userid: $api.getStorage('userid')
+            }));
+        });
+
+        _listener('fresh', function (ret) {
+            _ws.send(JSON.stringify({
+                userid: $api.getStorage('userid')
+            }));
+        })
+        // 长连接 渲染数据
+        _ws.get(function (rets) {
+            if (rets.indexOf('action') != -1) {
+                rets = JSON.parse(rets);
+                console.log('frame2-1: ' + JSON.stringify(rets))
+                if (rets.code == 200) {
+                    if (rets.action == 'Home/Privatechat/getOtherList') {
+                        console.log(JSON.stringify(rets))
+                        var result = rets.data.result.result;
+                        view.ffList = result;
+                    }
+                    if (rets.action == 'Home/Privatechat/getreadcount') {
+                        getNowMsgList();
+                        return;
+                    }
+                }
+            }
+        })
+    }
+
+    // 获取系统通知
+    function getAllSysInfo() {
+        _ajax('Home/User/sysmsg', function (ret, err) {
+            if (ret && ret.code == 200) {
+                view.sysInfo = ret.result;
+
+            }
+        })
+    }
+
+    // 即时刷新的消息
+    function getNowMsgList() {
+        if (!$api.getStorage('userid')) {
+            api.refreshHeaderLoadDone();
+            return;
+        }
+        var obj = {
+            userid: $api.getStorage('userid')
+        };
+
+        _ajax('Home/Privatechat/getOtherList', function (ret, err) {
+            console.log(JSON.stringify(ret));
+            console.log(JSON.stringify(err));
+            api.refreshHeaderLoadDone();
+        }, {
+            data: JSON.stringify(obj)
+        })
+    }
+
+    // 获取费用信息
+    function getFee() {
+        _ajax('home/user/config', function (ret, err) {
+            if (ret.code == 200) {
+                for (var i = 0, len = ret.data.length; i < len; i++) {
+                    if (ret.data[i].id == 2) {
+                        feeObj = ret.data[i];
+                        return;
+                    }
+                }
+            }
+        })
+    }
+</script>
+
+</html>

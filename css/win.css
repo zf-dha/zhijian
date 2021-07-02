@@ -1,0 +1,38 @@
+header {
+    background: #fff;
+    color: #253B3E;
+    position: relative;
+}
+
+header .aui-iconfont {
+    font-size: 20px;
+    /* font-weight: bold; */
+}
+
+.title {
+    font-size: 18px;
+    height: 24px;
+    font-weight: bold;
+}
+
+.more {
+    font-size: 14px;
+    position: absolute;
+    right: 10px;
+    color: #663DFB;
+}
+
+.more.hide {
+    visibility: hidden;
+}
+
+.back {
+    width: 10vw;
+    position: absolute;
+    left: 10px;
+    text-align: center;
+}
+
+.back img {
+    width: 8px;
+}

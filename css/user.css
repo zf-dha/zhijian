@@ -1,0 +1,64 @@
+html,
+body {
+    background: #eee;
+}
+
+.w-bg {
+    background: #fff;
+}
+
+.wrap .tab {
+    padding: 15px 10px 5px 10px;
+    font-size: 14px;
+}
+
+.wrap .li {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin: 0 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.wrap .li .title {
+    font-weight: bold;
+    width: 20vw;
+}
+
+.wrap .li .content {
+    width: calc(80vw - 20px);
+}
+
+.wrap .li .content input {
+    width: 100%;
+}
+
+.wrap .li.flex-col .content {
+    width: calc(100vw - 20px);
+    margin-top: 10px;
+}
+
+.wrap .li.flex-col .content textarea {
+    width: 100%;
+    line-height: 25px;
+    resize: none;
+}
+
+.base-icon {
+    width: 40px;
+    height: 30px;
+    display: inline-block;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+/* 我的 消息开启 */
+.base-icon.my-msg {
+    background-image: url('../image/icon/c2.png');
+}
+
+/* 我的 消息关闭 */
+.base-icon.my-msg-close {
+    background-image: url('../image/icon/c1.png');
+}

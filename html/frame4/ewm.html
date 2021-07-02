@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>放飞科技</title>
+    <link rel="stylesheet" href="../../css/api.css">
+    <link rel="stylesheet" href="../../css/news.css">
+    <style>
+        html,
+        body {
+            background: #2a292e;
+            color: #d5a054;
+        }
+
+        .num-ul {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .num-ul .list {
+            text-align: center;
+            font-size: 12px;
+            width: calc(100% / 3);
+        }
+
+        .num-ul .name {
+            color: #d5a054;
+        }
+
+        .num-ul .num {
+            font-size: 18px;
+            color: #d5a054;
+            font-weight: 700;
+        }
+
+        .num-ul .big-num {
+            font-size: 25px;
+        }
+
+        .lq-btn {
+            background: #d5a054;
+            color: #2a292e;
+            border-radius: 20px;
+            line-height: 30px;
+            padding: 0 25px;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+        /* 分享 */
+        .share-code {
+            border-radius: 5px;
+            background: linear-gradient(to right, #d59f55, #48382b);
+            color: #2a292e;
+            font-size: 14px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 30px 0;
+        }
+
+        .share-code * {
+            color: #2a292e;
+        }
+
+        .share-code img {
+            width: 20px;
+        }
+
+        .share-code .code {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .share-code .copy-btn {
+            border-radius: 20px;
+            padding: 0 20px;
+            line-height: 30px;
+            font-size: 12px;
+            background: #d4a053;
+        }
+
+        .bg {
+            margin-bottom: 30px;
+            border-radius: 5px;
+            padding: 1px;
+            background: linear-gradient(#d59f55, #48382b);
+        }
+
+        .bg * {
+            color: #a77e3b;
+        }
+
+        .bg .bg-content {
+            border-radius: 5px;
+            background: #1b1a1f;
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .bg .bg-content p {
+            margin-bottom: 10px;
+        }
+
+        .bg .bg-title {
+            text-align: center;
+        }
+
+        /* 表格 */
+        .mem-table {
+            width: 100%;
+            text-align: center;
+        }
+
+        .mem-table tr th,
+        .mem-table tr td {
+            padding: 5px 0;
+        }
+
+        .mem-table tr td {
+            font-size: 12px;
+        }
+
+        #ff-footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .ewm-btn {
+            background: linear-gradient(to right, #d5a14e, #b57d30);
+            color: #fff;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 85vw;
+            line-height: 50px;
+            margin: 10px 0;
+        }
+
+        .ewm-btn img {
+            width: 30px;
+            margin-right: 5px;
+        }
+
+        .ewm-btn span {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        /* 二维码 */
+        .ewm-wrap {
+            position: fixed;
+            /* background: #1b1a1f; */
+            background-image: url('../../image/reg_bg.png');
+            background-size: 100% 100%;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .ewm-wrap img {
+            width: 50vw;
+        }
+
+        .ewm-wrap .ewm-title {
+            margin-bottom: 20px;
+            color: #f3f3f3;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="view">
+        <div class="ewm-wrap flex-c flex-col wrap">
+            <p class="ewm-title">扫一扫，下载指间公园</p>
+            <div id="qrcode"></div>
+        </div>
+        <footer id="ff-footer" class="flex-c">
+            <button class="ewm-btn" onclick="downLoad()">
+                <img src="../../image/icon/ewm.png" alt="">
+                <span>保存邀请二维码</span>
+            </button>
+        </footer>
+    </div>
+</body>
+<script src="../../script/api.js"></script>
+<script src="../../script/ffkj.js"></script>
+<script src="../../script/jquery.js"></script>
+<script src="../../script/vue.js"></script>
+<script src="../../script/qrcode.js"></script>
+<script src="../../script/html2canvas.js"></script>
+<script src="../../script/img.js"></script>
+<script>
+    var view = new Vue({
+        el: '#view',
+        data: {
+            imgurl: imgurl,
+            ffList: [],
+            ffInfo: {},
+            ewm: 0,
+        },
+        methods: {
+            _url: function (param, url) {
+                _url(param, url);
+            },
+            // 图片
+            returnImg: function (url) {
+                return returnImg(url);
+            },
+            // 图片自适应
+            imgCss: function (url, event) {
+                var e = event.currentTarget;
+                imgCss(url, function (w, h) {
+                    if (w < h) {
+                        $(e).parent().addClass('img-w').removeClass('img-h');
+                    }
+                })
+            },
+        }
+    })
+    apiready = function () {
+        var codeurl = fondfell_url + '?yq=' + $api.getStorage('userid');
+        // var codeurl = 'http://www.youdingb.com/hunlian/hunlian0804/a.php?yq=123456';
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: codeurl,
+            width: 150,
+            height: 150,
+            // colorDark: "#fff",
+            // colorLight: "#1b1a1f",
+        });
+    }
+
+    function downLoad() {
+        _loading();
+        canvasToBase('.ewm-wrap', 1, function (path) {
+            view.ewm = 0;
+            _loadingClose();
+            savePhotoToAlbum(path)
+        })
+    }
+</script>
+
+</html>

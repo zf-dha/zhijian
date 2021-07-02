@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/news.css" />
+    <style>
+        html,
+        body {
+            background: none;
+        }
+
+        .bg {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .wrap {
+            background: #fff;
+            width: 100vw;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            border-radius: 10px 10px 0 0;
+        }
+
+        /*  */
+        .top {
+            padding: 10px;
+            background: rgba(102, 61, 251, 0.1);
+            color: #666666;
+            font-size: 14px;
+        }
+
+        .top .title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* 刷新 */
+        .reflash {
+            width: 15px;
+            margin-left: 5px;
+        }
+
+        /* 列表 */
+        .ul {
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+
+        .ul .list {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #666666;
+            font-size: 14px;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .money {
+            text-align: right;
+        }
+
+        .money b {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .chong-btn {
+            background: rgba(102, 61, 251, 0.1);
+            width: 30vw;
+            margin: 0 10px;
+            height: 40px;
+            border-radius: 20px;
+            ;
+        }
+
+        .pay-btn {
+            width: calc(70vw - 30px);
+            height: 40px;
+            border-radius: 20px;
+            color: #fff;
+        }
+
+        .money-icon {
+            background-image: url('../../image/icon/m6.png');
+            background-size: 100%;
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            background-repeat: no-repeat;
+        }
+
+        .btn {
+            background: rgba(102, 61, 251, 0.1);
+            color: #663DFB;
+            font-size: 14px;
+            border-radius: 3px;
+            padding: 5px 0;
+            width: 65px;
+        }
+
+        .tip {
+            padding: 10px 0;
+            text-align: center;
+            font-size: 12px;
+            color: #757575;
+        }
+
+        .tip a {
+            color: #2196f3;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="view">
+        <div class="bg" onclick="api.closeFrame();"></div>
+        <div class="wrap">
+            <div class="top flex-bt">
+                <span class="title new-theme-color">支付</span>
+                <div class="flex">
+                    <span>可用余额：<span class="new-theme-color">{{myMoney}}</span>个 | </span>
+                    <img onclick="getMyMoney();" class="reflash" src="../../image/icon/m5.png" alt="">
+                </div>
+            </div>
+            <p class="tip" onclick="_url({url:'about', title:'充值协议', id:9})">充值表示您已阅读并同意<a href="javascript:;">《充值协议》</a></p>
+            <ul class="ul">
+                <!-- <li class="list">
+                    <div class="left flex-c">
+                        <i class="money-icon"></i>
+                        <span class="name new-margin-l-10">10个</span>
+                    </div>
+                    <button class="btn">￥15.00</button>
+                </li>
+                <li class="list">
+                    <div class="left flex-c">
+                        <i class="money-icon"></i>
+                        <span class="name new-margin-l-10">10个</span>
+                    </div>
+                    <button class="btn">￥150.00</button>
+                </li> -->
+                <li class="list" v-for="(m, index) in ffList">
+                    <div class="left flex-c">
+                        <i class="money-icon"></i>
+                        <span class="name new-margin-l-10">{{m.money}}个</span>
+                    </div>
+                    <button class="btn" @click="submit(m.id, m.price)">￥{{m.price}}</button>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/zhifu.js"></script>
+<script type="text/javascript" src="../../script/jsencrypt.js"></script>
+<script type="text/javascript" src="../../script/ffkj.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script>
+    var view = new Vue({
+        el: '#view',
+        data: {
+            imgurl: imgurl,
+            ffList: [],
+            ffInfo: {},
+            myMoney: 0,
+        },
+        methods: {
+            _url: function (param, url) {
+                _url(param, url);
+            },
+            // 充值
+            submit: function (id, money) {
+                if (!ALIPAY) {
+                    submit(id, money, 0);
+                } else {
+                    var buttons = ['微信', '支付宝'];
+                    _action('请选择充值方式', buttons, function (bIndex) {
+                        if (bIndex != buttons.length + 1) {
+                            submit(id, money, bIndex - 1);
+                        }
+                    })
+                }
+            }
+        }
+    })
+    apiready = function () {
+        api.closeFrame({
+            name: 'frame4/show_pay'
+        })
+        getChong();
+        getMyMoney();
+    }
+
+    // 渲染充值列表
+    function getChong() {
+        _ajax('api/topup/lists', function (ret, err) {
+            console.log(JSON.stringify(ret));
+            console.log(JSON.stringify(err));
+            if (ret && ret.code == 200) {
+                view.ffList = ret.data;
+            }
+        })
+    }
+
+    // 获取余额
+    function getMyMoney() {
+        _ajax('api/user/userVolley', function (ret, err) {
+            console.log(JSON.stringify(ret));
+            console.log(JSON.stringify(err));
+            if (ret && ret.code == 200) {
+                view.myMoney = ret.volley;
+            }
+        }, {
+            user_id: $api.getStorage('userid'),
+        })
+    }
+
+    // 确定
+    function submit(id, money, payWay) {
+        var userid = $api.getStorage('userid');
+        var param = setRSA('[userid={{' + userid + '}}][id={{' + id + '}}][paymethod={{' + payWay + '}}]');
+        _ajax('api/topup/recharge', function (ret, err) {
+            console.log(JSON.stringify(ret))
+            console.log(JSON.stringify(err))
+            var payType = payWay == 1 ? 'alipay' : 'wxpay';
+            if (ret.code == 200) {
+                openOtherPay({
+                    money: money,
+                    payType: payType,
+                    info: ret.data,
+                }, function () {
+                    _msg('支付成功');
+                    _send('pay_refresh');
+                    api.closeFrame();
+                })
+            } else {
+                _msg(ret.msg);
+            }
+        }, {
+            z: param,
+        })
+    }
+
+
+    // 设置密钥
+    function setRSA(msg) {
+        var rsa = new JSEncrypt();
+        rsa.setPublicKey(
+            '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCpvdExvx5zybwFboU1NSjuIghiuXNQSNiJ27G8iETbJdhtibKvTlbyzBVhq0brhnG16MG29pf8055zwODYKpWC+hPVJTflzhcYEVEqRpstq9q2BHe75ErRgjYIQiNGZJ11czQUj82TgDP3xMKntpchel5J3XbYfGjMzG3nARoOpwIDAQAB-----END PUBLIC KEY-----',
+            '10001');
+        return rsa.encrypt(msg);
+    }
+</script>
+
+</html>

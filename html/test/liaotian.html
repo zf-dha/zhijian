@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>放飞科技</title>
+    <style>
+        .list {
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .load {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            text-align: center;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .liao-ul {
+            height: 100vh;
+            overflow-y: scroll;
+            /* overflow-anchor: none; */
+            transform: rotate(180deg);
+            box-sizing: border-box;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .liao-ul .list {
+            transform: rotate(180deg);
+        }
+
+        #bottom {
+            height: 50vh;
+            background: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="view">
+        <p class="load" v-if="load==1">加载中</p>
+        <ul class="liao-ul">
+            <li class="list" v-for="(m, index) in ffList">{{m.name}} </li>
+            <!-- <div id="bottom">111</div> -->
+            <!-- <li class="list">id=0</li>
+            <li class="list">id=1</li> -->
+        </ul>
+    </div>
+</body>
+<script src="../../script/jquery.js"></script>
+<script src="../../script/vue.js"></script>
+<script>
+    var view = new Vue({
+        el: '#view',
+        data: {
+            ffList: [],
+            load: 0,
+        }
+    })
+
+    var id = 0;
+    var newId = 0;
+    test(1);
+
+    function getNew() {
+        newId++;
+        var data = [{
+            id: newId,
+            name: 'id: ' + newId
+        }]
+        view.ffList = data.concat(view.ffList);
+    }
+
+    function test(type) {
+        view.load = 1;
+        var data = [];
+        var oldFirst = id;
+        // for (var i = 0; i < 20; i++) {
+
+        // }
+        // setInterval(function () {
+        //     id--;
+        //     var time = new Date().getTime();
+        //     var obj = {
+        //         id: id,
+        //         name: 'id: ' + id
+        //     }
+        //     // data.push(obj);
+        //     view.ffList.unshift(obj)
+        // }, 1000)
+        // data = data.reverse();
+        // view.ffList = data.concat(view.ffList);
+        // view.ffList = view.ffList.concat(data);
+        setTimeout(function () {
+            view.load = 0;
+        }, 1000)
+    }
+
+    $('.liao-ul').scroll(function () {
+        //获取距离页面顶部的距离
+        var liaoH = $('.liao-ul')[0].scrollHeight; // 实际高度
+        var viewH = $('.liao-ul').height(); // 显示的高度
+        var toTop = $('.liao-ul').scrollTop(); // 滚动条移动的距离
+
+        if (liaoH - viewH - toTop < 10) {
+            test()
+        }
+
+        // var toTop = document.documentElement.scrollTop || document.body.scrollTop;
+        // if (status == 1) return;
+        // if (toTop > 100) {
+        //     status = 1;
+        //     test()
+        // }
+    })
+</script>
+
+</html>

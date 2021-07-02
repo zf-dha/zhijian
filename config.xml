@@ -1,0 +1,147 @@
+<widget id="A6179393101630" version="0.0.1">
+
+	<name>指间交友</name>
+
+	<description/>
+
+	<author email="843551895@qq.com" href="http://www.apicloud.com">zfdha</author>
+
+	<content src="index.html"/>
+
+	<preference name="pageBounce" value="false"/>
+
+	<preference name="appBackground" value="rgba(255,255,255,1)"/>
+
+	<preference name="windowBackground" value="rgba(255,255,255,1)"/>
+
+	<preference name="frameBackgroundColor" value="rgba(255,255,255,1)"/>
+
+	<preference name="hScrollBarEnabled" value="true"/>
+
+	<preference name="vScrollBarEnabled" value="false"/>
+
+	<preference name="autoLaunch" value="true"/>
+
+	<preference name="fullScreen" value="true"/>
+
+	<preference name="autoUpdate" value="true"/>
+
+	<preference name="smartUpdate" value="false"/>
+
+	<preference name="softInputMode" value="resize"/>
+
+	<preference name="softInputBarEnabled" value="false"/>
+
+	<preference name="debug" value="true"/>
+
+	<preference name="statusBarAppearance" value="true"/>
+
+	<preference name="appCertificateVerify" value="false"/>
+
+	<preference name="useWKWebView" value="true"/>
+
+	<permission name="readPhoneState"/>
+
+	<permission name="camera"/>
+
+	<permission name="record"/>
+
+	<permission name="location"/>
+
+	<permission name="fileSystem"/>
+
+	<permission name="internet"/>
+
+	<permission name="bootCompleted"/>
+
+	<permission name="hardware"/>
+
+	<access origin="*"/>
+
+	<feature name="agoraRtc"/>
+
+	<feature name="audioStreamer"/>
+
+	<feature name="clipBoard"/>
+
+	<feature name="faceidLiveDetect"/>
+
+	<feature name="FNImageClip"/>
+
+	<feature name="imageFilter"/>
+
+	<feature name="recMp3"/>
+
+	<feature name="trans"/>
+
+	<feature name="UIActionSelector"/>
+
+	<feature name="UIActionProgress"/>
+
+	<feature name="UIChatBox"/>
+
+	<feature name="UILoading"/>
+
+	<feature name="videoPlayer"/>
+
+	<feature name="videoTool"/>
+
+	<feature name="webBrowser"/>
+
+	<feature name="bMap">
+
+		<param name="android_api_key" value="Z8C0a6ciz4MfywI1hwUrl1fuqzz7IU3V"/>
+
+		<param name="ios_api_key" value="kXQ19ggOfq7E68nBHv3l9td0CTwgW0MR"/>
+
+	</feature>
+
+	<feature name="ajpush">
+
+		<param name="app_key" value="778a8e009a69d89a1abc5be6"/>
+
+		<param name="channel" value="778a8e009a69d89a1abc5be6"/>
+
+	</feature>
+
+	<feature name="wxPlus">
+
+		<param name="urlScheme" value="wx68dde10d572a709b"/>
+
+		<param name="apiKey" value="wx68dde10d572a709b"/>
+
+		<param name="apiSecret" value="9056f0862c5c1ea1425eb3d0405742c4"/>
+
+		<param name="universalLink" value="https://www.youdingb.com"/>
+
+	</feature>
+
+	<feature name="wxPayPlus">
+
+		<param name="urlScheme" value="wx68dde10d572a709b"/>
+
+		<param name="apiKey" value="wx68dde10d572a709b"/>
+
+		<param name="apiSecret" value="9056f0862c5c1ea1425eb3d0405742c4"/>
+
+		<param name="universalLink" value="https://www.youdingb.com"/>
+
+	</feature>
+
+	<feature name="QQPlus">
+
+		<param name="urlScheme" value="tencent1105456531"/>
+
+		<param name="apiKey" value="1105456531"/>
+
+		<param name="universalLink" value="https://www.youdingb.com"/>
+
+	</feature>
+
+	<feature name="aliPayPlus">
+
+		<param name="urlscheme" value="AliPayPlusA6925751491241"/>
+
+	</feature>
+
+</widget>

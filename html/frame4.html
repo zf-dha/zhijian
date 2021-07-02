@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/api.css">
+    <link rel="stylesheet" href="../css/news.css">
+    <style>
+        html,
+        body {
+            background: #eee;
+        }
+
+        .top {
+            /* background: linear-gradient(-24deg, #9965ff, 10%, #160932); */
+            /* background: linear-gradient(-24deg, #663DFB, 10%, #160932); */
+            background: #fff;
+            color: #ba9fe8;
+            font-size: 14px;
+            line-height: 25px;
+        }
+
+        .top .tip.font-s {
+            color: #6B9399;
+            /* text-shadow: 0px 1px 1px orange; */
+        }
+
+        .title {
+            line-height: 40px;
+            /* color: #757575; */
+            color: #253B3E;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .w-bg {
+            background: #fff;
+        }
+
+        /* vip套餐 */
+        .vip-wrap {
+            display: -webkit-box;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .v-list {
+            border-radius: 8px;
+            box-shadow: 0 1px 7px 0 rgba(0, 0, 0, 0.5);
+            margin: 0 10px;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .v-list.active {
+            /* box-shadow: 0 1px 7px 0 #663DFB; */
+            color: #663DFB;
+            border: 3px solid;
+        }
+
+        .v-list .time {
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 50px;
+        }
+
+        /* .v-list.hot {
+            background-image: url('../image/hot.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+        } */
+
+        .hot {
+            position: absolute;
+            right: 0;
+            top: 5px;
+            background: #FF5D6E;
+            color: #fff;
+            border-radius: 3px 0 0 3px;
+            padding: 1px 5px;
+            font-size: 10px;
+        }
+
+        /* 支付方式 */
+        .p-list {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            margin: 0 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #555555;
+        }
+
+        .p-list:last-child {
+            border-bottom: none;
+        }
+
+        .p-list.active {
+            background-image: url('../image/select2.png');
+            background-repeat: no-repeat;
+            background-size: 20px 20px;
+            background-position: 100% center;
+        }
+
+        .p-list img {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        .submit {
+            width: calc(100vw - 20px);
+            margin: 20px 10px;
+            line-height: 40px;
+            background: #663DFB;
+            color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 1px 7px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .zhanwei {
+            width: 5px;
+            height: 50px;
+        }
+
+        .tip-tag {
+            background: #E6F1F2;
+            border-radius: 20px;
+            margin-right: 10px;
+            padding: 1px 15px;
+        }
+
+        .tip .t-list {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="view" v-cloak>
+        <p class="title new-padding-lr-10">会员特权</p>
+        <div class="top new-padding-10">
+            <!-- <p class="title" style="color: #f3f3f3;">会员特权</p> -->
+            <!-- <p class="title" >会员特权</p> -->
+            <ul class="tip font-s">
+                <li class="t-list"> <span class="tip-tag">看的更多</span>每天不限次数查看用户</li>
+                <li class="t-list"> <span class="tip-tag">看的更省</span>每天10次免费机会查看付费相册或社交账号</li>
+                <li class="t-list"> <span class="tip-tag">看的更久</span>每天阅后即焚照片的时间从2秒提升到6秒</li>
+                <li class="t-list"> <span class="tip-tag">看的更爽</span>免费发布节目广播</li>
+            </ul>
+        </div>
+        <p class="title new-padding-lr-10">选择套餐</p>
+        <div class="vip-wrap-bg w-bg new-padding-10">
+            <ul class="vip-wrap ">
+                <li class="v-list" :class="{'active': vipObj.id == m.id}" v-for="(m, index) in ffInfo"
+                    @click="vipObj=m;">
+                    <span class="name">{{ m.name }}</span>
+                    <span class="time">{{ m.description }}</span>
+                    <div class="money" v-if="!reg" style="font-size: 18px;"><b>{{ m.price }}</b>币</div>
+                    <div class="money" v-else style="font-size: 18px;"><b>{{ (m.price/rate).toFixed(2) }}</b>元</div>
+
+                    <div class="money" v-if="!reg" style="font-size: 14px;">约{{ m.average }}币/月</div>
+                    <div class="money" v-else style="font-size: 14px;">约{{ (m.average/rate).toFixed(2) }}元/月</div>
+                    <span class="hot" v-if="m.hot == 1">推荐</span>
+                </li>
+                <span class="zhanwei"></span>
+                <!-- <li class="v-list hot">
+                    <span class="name">会员</span>
+                    <span class="time">一个月</span>
+                    <div class="money" style="font-size: 18px;"><b>99</b>元/月</div>
+                    <div class="money" style="font-size: 14px;">99元/月</div>
+                    <span class="hot">hot</span>
+                </li> -->
+            </ul>
+        </div>
+        <div v-if="cash==1">
+            <p class="title new-padding-lr-10">支付方式</p>
+            <ul class="pay-wrap w-bg">
+                <li v-if="!reg" class="p-list  coin" :class="{'active':payway==3}" @click="payway = 3">
+                    <img src="../image/pay/yue.png" alt="">
+                    <span>零钱支付</span>
+                </li>
+                <li class="p-list" :class="{'active':payway==1}" @click="payway = 1">
+                    <img src="../image/pay/wx.png" alt="">
+                    <span>微信支付</span>
+                </li>
+                <li v-if="ALIPAY" class="p-list zfb" :class="{'active':payway==2}" @click="payway = 2">
+                    <img src="../image/pay/zfb.png" alt="">
+                    <span>支付宝支付</span>
+                </li>
+
+                <li class="p-list" v-if="payway = 3">
+                    <span>支付金额: <b style="color: #663DFB;">{{ vipObj.price }}</b> 币</span>
+                </li>
+                <li class="p-list" v-else>
+                    <span>支付金额: <b style="color: #663DFB;">{{ (vipObj.price/rate).toFixed(2) }}</b> 元</span>
+                </li>
+            </ul>
+        </div>
+        <button class="new-btn" onclick="submit()">立即开通</button>
+    </div>
+</body>
+<script src="../script/api.js"></script>
+<script src="../script/jquery.js"></script>
+<script src="../script/vue.js"></script>
+<script src="../script/ffkj.js"></script>
+<script src="../script/zhifu.js"></script>
+<script>
+    var view = new Vue({
+        el: '#view',
+        data: {
+            ffInfo: {}, // vip 套餐列表
+            vipObj: {}, // 选择的vip类型
+            cash: 0, // 是否显示现金购买通道
+            payway: 3, // 1微信 2支付宝 3余额
+            reg: 0, // 是否由注册处进入
+            ALIPAY: ALIPAY,
+            rate: 0,
+
+            phone: '',
+            pwd: '',
+            uid: '',
+        },
+        methods: {
+            _url: function (pageParam, url, login) {
+                _url(pageParam, url, login);
+            },
+        }
+    })
+
+    apiready = function () {
+        if (api.pageParam['reg']) {
+            view.reg = 1;
+            view.payway = 1;
+
+            view.phone = api.pageParam['phone'];
+            view.pwd = api.pageParam['password'];
+        }
+        getRate();
+        getVip();
+        _heibai(1);
+    }
+
+    // 获取套餐列表
+    function getVip() {
+        _ajax('api/vipstyle/lists', function (ret, err) {
+            console.log(JSON.stringify(ret))
+            console.log(JSON.stringify(err))
+            if (ret.code == 200) {
+                view.ffInfo = ret.data;
+                for (var i = 0, len = ret.data.length; i < len; i++) {
+                    if (view.ffInfo[i].hot == 1) {
+                        view.vipObj = view.ffInfo[i];
+                    }
+                }
+            }
+        })
+    }
+
+    // 获取兑换比例 平台币/rmb 比例
+    function getRate() {
+        _ajax('home/withdraw/rate', function (ret, err) {
+            console.log(JSON.stringify(ret));
+            console.log(JSON.stringify(err));
+            if (ret && ret.code == 200) {
+                view.rate = ret.data.rate;
+            }
+        })
+    }
+
+
+    // 确定
+    function submit() {
+        if (!view.vipObj.id) {
+            _msg('请选择开通会员类型');
+            return;
+        }
+        if (view.reg == 1) {
+            // 注册购买
+            buyRegVip();
+        } else {
+            // 非注册购买
+            if (view.payway == 3) {
+                // 余额
+                showDetail('frame4/show_pay', {
+                    data: view.vipObj
+                })
+            } else {
+                buyVip();
+            }
+        }
+    }
+    // 非注册时购买
+    function buyVip() {
+        _ajax('api/vipstyle/buy', function (ret, err) {
+            console.log(JSON.stringify(ret))
+            console.log(JSON.stringify(err))
+            if (ret && ret.code == 200) {
+                var payType = view.payway == 1 ? 'wxpay' : 'alipay';
+                openOtherPay({
+                    money: view.vipObj.price,
+                    payType: payType,
+                    info: ret.data
+                })
+            } else {
+                _msg(ret.result)
+            }
+        }, {
+            user_id: $api.getStorage('userid'),
+            method: view.payway, //	1微信 2支付宝 3余额
+            id: view.vipObj.id,
+        })
+    }
+
+    // 获取订单号 注册时购买会员 // 1微信 2支付宝 3余额
+    function buyRegVip() {
+        _ajax('Home/User/regvip', function (ret, err) {
+            if (ret.code == 200) {
+                view.uid = ret.user_id;
+                var payType = view.payway == 1 ? 'wxpay' : 'alipay';
+                openOtherPay({
+                    money: view.vipObj.price,
+                    payType: payType,
+                    info: ret.data
+                }, openOtherPaySuccess)
+            } else {
+                _msg(ret.msg);
+            }
+        }, {
+            phone: view.phone,
+            password: view.pwd,
+            wechat: $api.getStorage('wechat'),
+            qq_openID: $api.getStorage('qq_openID')
+        })
+    }
+    //  支付成功后 处理
+    function openOtherPaySuccess() {
+        _msg('支付成功');
+        if (view.reg) {
+            // 注册购买 成功后跳转到设置个人资料
+            _url({
+                url: 'frame0/she_zhi_ji_ben_zi_liao_frame',
+                title: '完善资料',
+                phone: view.phone,
+                password: view.pwd,
+                uid: view.uid
+            })
+        } else {
+            _ajax('Home/User/getNewMsg', function () {}); // 要求后端推送公告
+            timerWin();
+        }
+    }
+</script>
+
+</html>

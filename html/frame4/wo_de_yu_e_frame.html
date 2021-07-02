@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui_font.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/news.css" />
+    <style>
+        .top {
+            width: 100%;
+            height: 120px;
+            text-align: center;
+        }
+
+        .top p:first-child {
+            padding-top: 35px;
+            color: #787878;
+        }
+
+        .top p:last-child {
+            font-size: 25px;
+            font-weight: 600;
+            line-height: 40px;
+        }
+
+        .list {
+            background: white;
+        }
+
+        .list ul li {
+            display: flex;
+            padding-left: 8px;
+            font-size: 14px;
+            line-height: 3;
+            color: #484848;
+            border-bottom: 1px solid #f1f1f1;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .list ul li i {
+            margin-right: 5px;
+        }
+
+        .header {
+            display: flex;
+            border-bottom: 1px solid #ccc;
+            background: #fff;
+            line-height: 2.8em;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .header .hd {
+            flex: 1;
+            border-bottom: 2px solid transparent;
+        }
+
+        .header .current {
+            border-color: #9a78ea;
+            color: #9a78ea;
+        }
+
+        .m-content {
+            background: #fff;
+            font-size: 14px;
+            padding: 18px 16px 0 16px;
+        }
+
+        .money {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            padding: 26px 0;
+            border-bottom: 1px solid #f1f1f1;
+            font-size: 15px;
+            color: #180a33;
+            font-weight: bold;
+        }
+
+        .money_size {
+            font-size: 24px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            text-align: center;
+            width: 100%;
+            background: #fff;
+            line-height: 2;
+            color: #663DFB;
+            ;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .js-part2 {
+            display: none;
+        }
+
+        /*.list ul .js-part2{display: none;}*/
+
+        footer>div {
+            width: 50vw;
+            background: rgba(102, 61, 251, 0.1);
+            /* padding-top: 15px; */
+            font-size: 14px;
+            padding: 10px 0;
+        }
+
+        footer img {
+            width: 25px;
+        }
+
+        .tx-word * {
+            color: #663DFB;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="view" v-cloak>
+        <section class="m-content">
+            <p class="js-part1" style="text-align: center;">
+                <div class="tx-word" v-html="tixianText"></div>
+                <!-- <img src="../../image/icon/m1.png" alt=""> -->
+            </p>
+            <div class="money">
+                <div class="part js-part1">
+                    <p>账户余额</p>
+                    <p><span class="money_size" id="myMoney">{{myMoney}}</span>币</p>
+                </div>
+                <div class="part js-part1">
+                    <p>可提现</p>
+                    <p><span class="money_size" id="txMoney">{{myMoney}}</span>币</p>
+                </div>
+            </div>
+            <div class="list">
+                <ul>
+                    <li class="js-part1 zfb" onclick="changePay();">
+                        <span>支付宝账号：</span>
+                        <div>
+                            <span class="font-s" v-if="!ffInfo.zhifucount || ffInfo.zhifucount == 'null'">立即绑定</span>
+                            <span class="font-s" v-else>{{returnName(ffInfo.zhifucount)}}</span>
+                            <i class="aui-iconfont aui-icon-right"></i>
+                        </div>
+                    </li>
+                    <li v-if="ffInfo.proxy==1" class="js-part1" @click="_url({url:'frame4/tuiguang', title:'推广收益'})">
+                        <span>推广收益</span>
+                        <i class="aui-iconfont aui-icon-right"></i>
+                    </li>
+                    <li class="js-part1" @click="_url({url:'frame4/chong_zhi_ji_lu_frame', title:'充值记录'})">
+                        <span>充值记录</span>
+                        <i class="aui-iconfont aui-icon-right"></i>
+                    </li>
+                    <li class="js-part1" @click="_url({url:'frame4/ti_xian_ji_lu_frame', title:'提现记录'})">
+                        <span>提现记录</span>
+                        <i class="aui-iconfont aui-icon-right"></i>
+                    </li>
+                    <!-- <li class="js-part1" @click="_url({url:'frame4/gou_mai_ji_lu_frame', title:'购买记录'})">
+                        <span>购买记录</span>
+                        <i class="aui-iconfont aui-icon-right"></i>
+                    </li> -->
+                </ul>
+            </div>
+        </section>
+        <footer class="footer">
+            <!-- <div onclick="showDetail('frame4/show_chong')" class="new-theme-color" style="border-right: 1px solid #fff;" class="flex-col flex-c" @click="_url({balance: myMoney, url: 'frame4/chong_zhi_fu_wu_frame', title:'充值'})"> -->
+            <div onclick="showDetail('frame4/show_chong')" class="new-theme-color" style="border-right: 1px solid #fff;"
+                class="flex-col flex-c">
+                <!-- <img src="../../image/chong.png" alt=""> -->
+                充值
+            </div>
+            <div class="flex-col flex-c new-theme-bg" style="color: #fff;" onclick="tixian()">
+                <!-- <img src="../../image/tixian.png" alt=""> -->
+                提现
+            </div>
+        </footer>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/ffkj.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript">
+    var view = new Vue({
+        el: '#view',
+        data: {
+            imgurl: imgurl,
+            ffList: [],
+            ffInfo: {},
+            myMoney: 0,
+            tixianText: '',
+        },
+        methods: {
+            _url: function (param, url) {
+                _url(param, url);
+            },
+            returnName: function (s, all) {
+                return returnName(s, all);
+            },
+        }
+    })
+    apiready = function () {
+        // 提现/充值后 刷新用户余额
+        _listener('money_get', function (ret) {
+            getUserInfo()
+        })
+
+        // 刷新用户信息 重新获取提现信息
+        _listener('pay_refresh', function () {
+            getUserInfo()
+        })
+        _listener('viewappear', function () {
+            getUserInfo()
+        })
+
+        getUserInfo()
+        // 获取提现注意事项
+        getPageContent(4, function (data) {
+            view.tixianText = data.body
+        })
+    };
+
+
+    // 获取提现账号信息
+    function getUserInfo() {
+        _getUser(function (ret) {
+            view.ffInfo = ret.result;
+            view.myMoney = ret.result.volley;
+        })
+    }
+
+    // 打开提现窗口
+    function tixian() {
+        // 设置支付密码
+        if (!parseInt(view.ffInfo.paypwd)) {
+            showDetail('frame4/paypwd');
+            return;
+        }
+        // 设置支付宝
+        if (!view.ffInfo.zhifucount) {
+            if (!view.ffInfo.phone) {
+                _url({
+                    url: 'frame4/bang_ding_shou_ji_frm',
+                    title: '绑定手机'
+                })
+            } else {
+                _url({
+                    url: 'frame4/set_alipay',
+                    title: '设置支付宝',
+                    phone: view.ffInfo.phone
+                })
+            }
+            return;
+        }
+
+        _url({
+            url: 'frame4/ti_xian_frame',
+            title: '提现'
+        })
+    }
+
+    // 修改提现信息
+    function changePay() {
+        if (!view.ffInfo.zhifucount) {
+            if (!view.ffInfo.phone) {
+                _url({
+                    url: 'frame4/bang_ding_shou_ji_frm',
+                    title: '绑定手机'
+                })
+            } else {
+                _url({
+                    url: 'frame4/set_alipay',
+                    title: '设置支付宝',
+                    phone: view.ffInfo.phone
+                })
+            }
+            return;
+        } else {
+            // 显示已设置的支付宝
+            showDetail('frame4/change_pay');
+        }
+    }
+</script>
+
+</html>

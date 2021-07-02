@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="../../css/api.css">
+    <link rel="stylesheet" href="../../css/news.css">
+    <style>
+        /* 支付方式 */
+        .p-list {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            margin: 0 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #555555;
+        }
+
+        .p-list:last-child {
+            border-bottom: none;
+        }
+
+        .p-list.active {
+            background-image: url('../../image/select2.png');
+            background-repeat: no-repeat;
+            background-size: 20px 20px;
+            background-position: 100% center;
+        }
+
+        .p-list img {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        html,
+        body {
+            background: #eee;
+        }
+
+        .money {
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap" id="view" v-cloak>
+        <div class="top-wrap w-bg new-padding-10">
+            <div class="my-money font-n new-padding-tb-10"> 你可兑消的币为: {{myMoney}}个 </div>
+            <div class="flex-bt font-n new-padding-tb-10 money">
+                <input type="number" placeholder="请输入兑消数量" v-model="txMoney">
+                <span>个</span>
+            </div>
+            <div class="flex-bt font-n new-padding-tb-10" id="js-money">
+                <span>预计到账</span>
+                <span>{{ (txMoney/rate).toFixed(2) }}元</span>
+            </div>
+            <div class="tip font-s new-margin-t-10" v-html="tixianText"></div>
+        </div>
+
+        <p class="title new-padding-10 font-s">我的提现账号</p>
+        <ul class="pay-wrap w-bg">
+            <li class="p-list zfb flex-bt" data-type=1 tapmode onclick="changePay()">
+                <div class="flex">
+                    <img src="../../image/pay/zfb.png" alt="">
+                    <span>支付宝</span>
+                </div>
+                <span>{{returnName(ffInfo.zhifucount)}}</span>
+            </li>
+        </ul>
+        <p class="title new-padding-10 font-s">提现方式</p>
+        <ul class="pay-wrap w-bg">
+            <li class="p-list zfb active" data-type=1>
+                <img src="../../image/pay/zfb.png" alt="">
+                <span>支付宝</span>
+            </li>
+            <!-- <li class="p-list" data-type=2  onclick="selectPay(this)">
+                <img src="../../image/pay/wx.png" alt="">
+                <span>微信</span>
+            </li> -->
+        </ul>
+        <button class="new-submit" tapmode onclick="submit()">提现</button>
+    </div>
+</body>
+<script src="../../script/api.js"></script>
+<script src="../../script/jquery.js"></script>
+<script src="../../script/ffkj.js"></script>
+<script src="../../script/vue.js"></script>
+<script>
+    var view = new Vue({
+        el: '#view',
+        data: {
+            imgurl: imgurl,
+            ffList: [],
+            ffInfo: {},
+            myMoney: 0,
+            txMoney: 0,
+            rate: 1,
+            serviceInfo: {}, // 客服信息
+            tixianText: '',
+        },
+        methods: {
+            returnName: function (s, all) {
+                return returnName(s, all);
+            },
+            _url: function (param, url) {
+                _url(param, url);
+            },
+        }
+    })
+
+    apiready = function () {
+        getMyMoney();
+        getRate();
+        // 提现/充值后 刷新用户余额
+        _listener('money_get', function (ret) {
+            getMyMoney();
+        })
+
+        // 刷新用户信息 重新获取提现信息
+        _listener('pay_refresh', function () {
+            getMyMoney();
+        })
+
+        // 监听提现情况
+        _listener('tixian', function () {
+            var userid = $api.getStorage('userid');
+            var money = $.trim($('.money input').val());
+            _ajax('home/Withdraw/tiXian?money=' + money + '&method=1&userid=' + userid, function (ret,
+            err) {
+                console.log(JSON.stringify(ret))
+                console.log(JSON.stringify(err))
+                if (ret && ret.code == 200) {
+                    getMyMoney();
+                    _msg('提现成功');
+                    timerWin();
+                } else {
+                    _msg(ret.msg);
+                }
+            })
+        })
+
+        getService()
+        // 获取提现注意事项
+        getPageContent(5, function (data) {
+            view.tixianText = data.body
+        })
+    }
+
+    // 获取官方联系方式
+    function getService() {
+        _ajax('home/user/customService', function (ret, err) {
+            console.log(JSON.stringify(ret))
+            console.log(JSON.stringify(err))
+            if (ret && ret.code == 200) {
+                view.serviceInfo = ret.result;
+            }
+        })
+    }
+
+
+    // 获取兑换比例
+    function getRate() {
+        _ajax('home/withdraw/rate', function (ret, err) {
+            console.log(JSON.stringify(ret));
+            console.log(JSON.stringify(err));
+            if (ret && ret.code == 200) {
+                view.rate = ret.data.rate;
+            }
+        })
+    }
+
+    // 获取余额
+    function getMyMoney() {
+        _ajax('api/user/userVolley', function (ret, err) {
+            console.log(JSON.stringify(ret));
+            console.log(JSON.stringify(err));
+            if (ret && ret.code == 200) {
+                view.myMoney = ret.volley;
+                getUserInfo();
+            }
+        }, {
+            user_id: $api.getStorage('userid'),
+        })
+    }
+
+    // 获取提现账号信息
+    function getUserInfo() {
+        _getUser(function (ret) {
+            view.ffInfo = ret.result;
+        })
+    }
+
+    // 提现
+    function submit() {
+        var money = $.trim($('.money input').val());
+        if (isNaN(Number(money)) || Number(money) <= 0) {
+            _msg('请输入提现金额');
+            return;
+        }
+        if (Number(money) > view.myMoney) {
+            _msg('超出余额');
+            return;
+        }
+        showDetail('frame4/go_pay', {
+            money: money,
+            event: 'tixian'
+        });
+    }
+
+    // 修改提现信息
+    function changePay() {
+        if (!view.ffInfo.zhifucount) {
+            if (!view.ffInfo.phone) {
+                _url({
+                    url: 'frame4/bang_ding_shou_ji_frm',
+                    title: '绑定手机'
+                })
+            } else {
+                _url({
+                    url: 'frame4/set_alipay',
+                    title: '设置支付宝',
+                    phone: view.ffInfo.phone
+                })
+            }
+            return;
+        } else {
+            // 显示已设置的支付宝
+            showDetail('frame4/change_pay');
+        }
+    }
+</script>
+
+</html>
