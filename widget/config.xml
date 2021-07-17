@@ -39,6 +39,8 @@
 	<preference name="appCertificateVerify" value="false"/>
 
 	<preference name="useWKWebView" value="true"/>
+	
+	<preference name="backgroundMode" value="audio"/>
 
 	<permission name="readPhoneState"/>
 
