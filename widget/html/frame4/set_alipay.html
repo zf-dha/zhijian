@@ -23,12 +23,12 @@
         <div class="wrap">
             <ul class="input-wrap w-bg">
                 <li class="li ali-name">
-                    <span class="name">支付宝名字</span>
-                    <input type="text" placeholder="请输入支付宝名字">
+                    <span class="name">名字</span>
+                    <input type="text" placeholder="请输入名字">
                 </li>
                 <li class="li ali-num">
-                    <span class="name">支付宝账号</span>
-                    <input type="text" placeholder="请输入支付宝账号">
+                    <span class="name">账号</span>
+                    <input type="text" placeholder="请输入账号">
                 </li>
                 <li class="li code">
                     <span class="name">验证码</span>
@@ -72,11 +72,11 @@
         var aliName = $.trim($('.ali-name input').val());
         var aliNum = $.trim($('.ali-num input').val());
         if (!aliName) {
-            _msg('支付宝名字未填写');
+            _msg('名字未填写');
             return;
         }
         if (!aliNum) {
-            _msg('支付宝账号未填写');
+            _msg('账号未填写');
             return;
         }
         // if (!checkMobile(phone)) {

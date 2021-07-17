@@ -149,7 +149,7 @@
     // 确定
     function submit() {
         var userid = $api.getStorage('userid');
-        var payWay = 0; // 充值方式 0 微信 1 支付宝
+        var payWay = 0; // 充值方式 0 微信 1 
         var money = $.trim($('.money').val());
         if (isNaN(Number(money)) || Number(money) <= 0) {
             _msg('请输入充值金额');

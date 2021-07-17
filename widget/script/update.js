@@ -57,9 +57,9 @@ function versionCompare(v1, v2) {
     var ver1 = parseInt(brr[1]) - parseInt(arr[1]);
     var ver2 = parseInt(brr[2]) - parseInt(arr[2]);
     if (ver0 > 0) {
-        return false;  //true
+        return false;
     } else if (ver0 == 0 && (ver1 > 0 || (ver1 == 0 && ver2 > 0))) {
-        return false;  //true
+        return false;
     } else {
         return false;
     }
