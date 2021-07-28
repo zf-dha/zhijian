@@ -32,9 +32,9 @@ var videoPlay = function (id) {
         videoPlayer.open({
             rect: {
                 x: 0,
-                y: headerTop,
-                w: api.winWidth,
-                h: api.winHeight - headerTop
+                y: headerTop,
+                w: api.winWidth,
+                h: api.winHeight - headerTop
             },
             bg: '#000',
             path: data.url,
@@ -42,11 +42,14 @@ var videoPlay = function (id) {
             loop: true,
 
         }, function (ret, err) {
-            _loadingClose();
-            console.log(JSON.stringify(ret))
-            console.log(JSON.stringify(err))
-            // _this.volume();
-            videoPlayer.start();
+            if (ret.status) {
+                _loadingClose();
+                console.log(JSON.stringify(ret))
+                // _this.volume();
+                videoPlayer.start();
+            } else {
+                console.log(JSON.stringify(ret))
+            }
         });
     }
 
