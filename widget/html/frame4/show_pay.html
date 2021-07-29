@@ -71,13 +71,23 @@
             font-weight: bold;
         }
 
+        .btn-wrap{
+            display: flex;
+            display: -webket-flex;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+        }
+
         .chong-btn {
             background: rgba(102, 61, 251, 0.1);
             width: 30vw;
             margin: 0 10px;
             height: 40px;
             border-radius: 20px;
-            ;
         }
 
         .pay-btn {
@@ -114,8 +124,8 @@
                 </li>
             </ul>
             <div class="btn-wrap" style="padding-bottom: 10px;">
-                <button class="chong-btn new-theme-color" tapmode onclick="showDetail('frame4/show_chong')">充值</button>
-                <button class="pay-btn new-theme-bg" tapmode onclick="submit()">确认支付</button>
+                <button class="chong-btn new-theme-color" tapmode onclick="showDetail('frame4/show_chong')">购买会员</button>
+                <button v-if="myMoney >= ffInfo.price" class="pay-btn new-theme-bg" tapmode onclick="submit()">余额支付</button>
             </div>
         </div>
     </div>

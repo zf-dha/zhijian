@@ -227,6 +227,7 @@
             phone: '',
             pwd: '',
             uid: '',
+            myMoney: 0,
         },
         methods: {
             _url: function (pageParam, url, login) {
@@ -243,9 +244,21 @@
             view.phone = api.pageParam['phone'];
             view.pwd = api.pageParam['password'];
         }
+        getMyMoney();
         getRate();
         getVip();
         _heibai(1);
+    }
+
+    // 获取余额
+    function getMyMoney() {
+        _ajax('api/user/userVolley', function (ret, err) {
+            if (ret && ret.code == 200) {
+                view.myMoney = ret.volley;
+            }
+        }, {
+            user_id: $api.getStorage('userid'),
+        })
     }
 
     // 获取套餐列表
@@ -282,20 +295,43 @@
             _msg('请选择开通会员类型');
             return;
         }
+
         if (view.reg == 1) {
             // 注册购买
             buyRegVip();
         } else {
             // 非注册购买
             if (view.payway == 3) {
-                // 余额
-                showDetail('frame4/show_pay', {
-                    data: view.vipObj
-                })
+                // 查看余额是否充足购买
+                // if(view.myMoney >= view.vipObj.price){
+                //     hasMonBuy()
+                // }else{
+                    showDetail('frame4/show_pay', {
+                        data: view.vipObj
+                    })
+                // }
+                
             } else {
                 buyVip();
             }
         }
+    }
+     // 余额足够购买
+     function hasMonBuy() {
+        _ajax('api/vipstyle/buy', function (ret, err) {
+
+            if (ret && ret.code == 200) {
+                _ajax('Home/User/getNewMsg', function () {}); // 要求后端推送公告
+                _msg(ret.msg);
+                api.closeFrame();
+            } else {
+                _msg(ret.msg)
+            }
+        }, {
+            user_id: $api.getStorage('userid'),
+            method: 3, //	1微信 2支付宝 3余额
+            id: view.vipObj.id,
+        })
     }
     // 非注册时购买
     function buyVip() {
