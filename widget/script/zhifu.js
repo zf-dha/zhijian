@@ -79,6 +79,7 @@
             package: back_info.package,
             sign: back_info.sign,
         }, function (ret, err) {
+            alert(JSON.stringify(ret))
             if (ret.status) {
                 api.toast({
                     msg: '支付成功',
@@ -89,6 +90,7 @@
                 callback && callback(true);
             } else {
                 if (err.code == 2) {
+                    alert(JSON.stringify(err))
                     api.toast({
                         msg: '支付失败',
                     });
