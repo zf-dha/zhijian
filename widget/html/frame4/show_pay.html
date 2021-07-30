@@ -124,14 +124,23 @@
                 </li>
             </ul>
             <div class="btn-wrap" style="padding-bottom: 10px;">
-                <button class="chong-btn new-theme-color" tapmode onclick="showDetail('frame4/show_chong')">购买会员</button>
-                <button v-if="myMoney >= ffInfo.price" class="pay-btn new-theme-bg" tapmode onclick="submit()">余额支付</button>
+                
+                <div v-if="myMoney >= ffInfo.price">
+                    <button class="chong-btn new-theme-color" tapmode onclick="otherSubmit()">其他支付</button>
+                    <button class="pay-btn new-theme-bg" tapmode onclick="submit()">余额支付</button>
+                </div>
+                
+
+                <button v-else class="chong-btn new-theme-color" tapmode onclick="otherSubmit()">支付</button>
+
             </div>
         </div>
     </div>
 </body>
 <script type="text/javascript" src="../../script/api.js"></script>
 <script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/zhifu.js"></script>
+<script type="text/javascript" src="../../script/jsencrypt.js"></script>
 <script type="text/javascript" src="../../script/ffkj.js"></script>
 <script type="text/javascript" src="../../script/vue.js"></script>
 <script>
@@ -166,7 +175,7 @@
             user_id: $api.getStorage('userid'),
         })
     }
-    // 确定
+    // 余额支付
     function submit() {
         _ajax('api/vipstyle/buy', function (ret, err) {
             console.log(JSON.stringify(ret))
@@ -183,6 +192,52 @@
             method: 3, //	1微信 2支付宝 3余额
             id: view.ffInfo.id,
         })
+    }
+    //其他支付列表
+    function otherSubmit() {
+        var buttons = ['微信'];
+        _action('请选择充值方式', buttons, function (bIndex) {
+            if (bIndex != buttons.length + 1) {
+                goOtherPay(view.ffInfo.price, bIndex - 1);
+            }
+        })
+    }
+
+
+    // 其他支付
+    function goOtherPay(money, payWay) {
+        var userid = $api.getStorage('userid');
+        var param = setRSA('[userid={{' + userid + '}}][money={{' + money + '}}][paymethod={{' + payWay + '}}]');
+        _ajax('api/topup/recharge', function (ret, err) {
+            console.log(JSON.stringify(ret))
+            console.log(JSON.stringify(err))
+            var payType = payWay == 1 ? 'alipay' : 'wxpay';
+            if (ret.code == 200) {
+                openOtherPay({
+                    money: money,
+                    payType: payType,
+                    info: ret.data,
+                }, function () {
+                    _msg('支付成功');
+                    _send('pay_refresh');
+                    api.closeFrame();
+                })
+            } else {
+                _msg(ret.msg);
+            }
+        }, {
+            z: param,
+        })
+    }
+
+
+    // 设置密钥
+    function setRSA(msg) {
+        var rsa = new JSEncrypt();
+        rsa.setPublicKey(
+            '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCpvdExvx5zybwFboU1NSjuIghiuXNQSNiJ27G8iETbJdhtibKvTlbyzBVhq0brhnG16MG29pf8055zwODYKpWC+hPVJTflzhcYEVEqRpstq9q2BHe75ErRgjYIQiNGZJ11czQUj82TgDP3xMKntpchel5J3XbYfGjMzG3nARoOpwIDAQAB-----END PUBLIC KEY-----',
+            '10001');
+        return rsa.encrypt(msg);
     }
 </script>
 
