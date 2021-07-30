@@ -206,11 +206,12 @@
 
     // 其他支付
     function goOtherPay(money, payWay) {
+        console.log(money)
+        console.log(payWay)
         var userid = $api.getStorage('userid');
         var param = setRSA('[userid={{' + userid + '}}][money={{' + money + '}}][paymethod={{' + payWay + '}}]');
         _ajax('api/topup/recharge', function (ret, err) {
-            console.log(JSON.stringify(ret))
-            console.log(JSON.stringify(err))
+            console.log(222220)
             var payType = payWay == 1 ? 'alipay' : 'wxpay';
             if (ret.code == 200) {
                 openOtherPay({
