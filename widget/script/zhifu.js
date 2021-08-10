@@ -60,6 +60,9 @@
                     });
                     wxpay(ret.data, callback)
                 } else {
+                    api.toast({
+                        msg: '接口出错',
+                    });
                     callback && callback(false);
                 }
             }, {
