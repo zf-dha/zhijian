@@ -108,25 +108,25 @@
 
 	<feature name="wxPlus">
 
-		<param name="urlScheme" value="wx68dde10d572a709b"/>
+		<param name="urlScheme" value="wxcfa47eb36ac1244b"/>
 
-		<param name="apiKey" value="wx68dde10d572a709b"/>
+		<param name="apiKey" value="wxcfa47eb36ac1244b"/>
 
-		<param name="apiSecret" value="9056f0862c5c1ea1425eb3d0405742c4"/>
+		<param name="apiSecret" value="b69cad5f43b6935429af73b7b54aba9a"/>
 
-		<param name="universalLink" value="https://www.youdingb.com"/>
+		<param name="universalLink" value="http://www.mianxr.com"/>
 
 	</feature>
 
 	<feature name="wxPayPlus">
 
-		<param name="urlScheme" value="wx68dde10d572a709b"/>
+		<param name="urlScheme" value="wxcfa47eb36ac1244b"/>
 
-		<param name="apiKey" value="wx68dde10d572a709b"/>
+		<param name="apiKey" value="wxcfa47eb36ac1244b"/>
 
-		<param name="apiSecret" value="9056f0862c5c1ea1425eb3d0405742c4"/>
+		<param name="apiSecret" value="b69cad5f43b6935429af73b7b54aba9a"/>
 
-		<param name="universalLink" value="https://www.youdingb.com"/>
+		<param name="universalLink" value="http://www.mianxr.com"/>
 
 	</feature>
 
@@ -136,7 +136,7 @@
 
 		<param name="apiKey" value="1105456531"/>
 
-		<param name="universalLink" value="https://www.youdingb.com"/>
+		<param name="universalLink" value="http://www.mianxr.com"/>
 
 	</feature>
 

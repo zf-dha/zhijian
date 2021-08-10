@@ -4,10 +4,10 @@
  */
 
 // var fondfell_url = 'http://love.youdingb.com/hunlian210510';
-var fondfell_url = 'http://mxianxiaorou.com';
+var fondfell_url = 'http://api.mxianxiaorou.com';
 
 // var socket_url = 'love.youdingb.com';
-var socket_url = 'mxianxiaorou.com';
+var socket_url = 'api.mxianxiaorou.com';
 var base_url = fondfell_url + '/';
 
 var phpurl = base_url + 'apis/'
