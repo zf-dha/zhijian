@@ -114,7 +114,7 @@
 
 		<param name="apiSecret" value="b69cad5f43b6935429af73b7b54aba9a"/>
 
-		<param name="universalLink" value="http://www.mianxr.com"/>
+		<param name="universalLink" value="https://www.mianxr.com"/>
 
 	</feature>
 
@@ -126,7 +126,7 @@
 
 		<param name="apiSecret" value="b69cad5f43b6935429af73b7b54aba9a"/>
 
-		<param name="universalLink" value="http://www.mianxr.com"/>
+		<param name="universalLink" value="https://www.mianxr.com"/>
 
 	</feature>
 
@@ -142,7 +142,7 @@
 
 	<feature name="aliPayPlus">
 
-		<param name="urlscheme" value="AliPayPlusA6925751491241"/>
+		<param name="urlscheme" value="AliPayPlusA6179393101630"/>
 
 	</feature>
 
