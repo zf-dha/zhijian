@@ -151,7 +151,7 @@ function openOtherPay(data, callback) {
                     timerWin();
                 }
             } else {
-                _msg('支付失败222');
+                // _msg('支付失败222');
             }
         });
     }
