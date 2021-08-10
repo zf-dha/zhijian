@@ -55,6 +55,9 @@
             // 后端返回的仍为订单号 则需通过接口请求微信信息
             _ajax('api/Wechat/app', function (ret, err) {
                 if (ret && ret.code == 200) {
+                    api.toast({
+                        msg: '存在订单',
+                    });
                     wxpay(ret.data, callback)
                 } else {
                     callback && callback(false);
@@ -90,7 +93,7 @@
             } else {
                 if (err.code == 2) {
                     api.toast({
-                        msg: '支付失败',
+                        msg: '支付失败111',
                     });
                 }
                 callback && callback(false);
@@ -145,7 +148,7 @@ function openOtherPay(data, callback) {
                     timerWin();
                 }
             } else {
-                _msg('支付失败');
+                _msg('支付失败222');
             }
         });
     }

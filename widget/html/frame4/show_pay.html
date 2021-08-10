@@ -214,6 +214,7 @@
             console.log(222220)
             var payType = payWay == 1 ? 'alipay' : 'wxpay';
             if (ret.code == 200) {
+                console.log(JSON.stringify(ret.data))
                 openOtherPay({
                     money: money,
                     payType: payType,
