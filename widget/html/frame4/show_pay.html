@@ -195,7 +195,7 @@
     }
     //其他支付列表
     function otherSubmit() {
-        var buttons = ['微信'];
+        var buttons = ['微信','支付宝'];
         _action('请选择充值方式', buttons, function (bIndex) {
             if (bIndex != buttons.length + 1) {
                 goOtherPay(view.ffInfo.price, bIndex - 1);
@@ -211,10 +211,10 @@
         var userid = $api.getStorage('userid');
         var param = setRSA('[userid={{' + userid + '}}][money={{' + money + '}}][paymethod={{' + payWay + '}}]');
         _ajax('api/topup/recharge', function (ret, err) {
-            console.log(222220)
             var payType = payWay == 1 ? 'alipay' : 'wxpay';
             if (ret.code == 200) {
                 console.log(JSON.stringify(ret.data))
+                console.log(1111111)
                 openOtherPay({
                     money: money,
                     payType: payType,

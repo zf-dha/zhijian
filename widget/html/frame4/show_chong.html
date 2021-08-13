@@ -187,7 +187,7 @@
                 if (!ALIPAY) {
                     submit(id, money, 0);
                 } else {
-                    var buttons = ['微信'];
+                    var buttons = ['微信','支付宝'];
                     _action('请选择充值方式', buttons, function (bIndex) {
                         if (bIndex != buttons.length + 1) {
                             submit(id, money, bIndex - 1);
